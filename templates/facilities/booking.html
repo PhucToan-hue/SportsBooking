@@ -1,0 +1,612 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .booking-page {
+        background: #edf7ee;
+        min-height: 100vh;
+        padding-bottom: 180px;
+    }
+
+    .booking-header {
+        background: #17683d;
+        color: white;
+        padding: 22px;
+    }
+
+    .booking-header h3 {
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .booking-container {
+        padding: 20px;
+    }
+
+    .booking-table-wrapper {
+        overflow-x: auto;
+        background: white;
+        border-radius: 10px;
+        padding: 8px;
+    }
+
+    .booking-table {
+        border-collapse: separate;
+        border-spacing: 3px;
+        width: max-content;
+        min-width: 100%;
+        user-select: none;
+    }
+
+    .booking-table th,
+    .booking-table td {
+        border: 1px solid #ddd;
+        text-align: center;
+        min-width: 48px;
+        height: 48px;
+        padding: 5px;
+    }
+
+    .booking-table th {
+        background: #f4f4f4;
+        font-size: 12px;
+    }
+
+    .court-name {
+        min-width: 115px !important;
+        background: #e3f0e5 !important;
+        font-weight: bold;
+        position: sticky;
+        left: 0;
+        z-index: 2;
+    }
+
+    .booking-table td.slot-free {
+        background: #ffffff !important;
+        cursor: pointer;
+    }
+
+    .booking-table td.slot-free:hover {
+        background: #d6f5df !important;
+    }
+
+    .booking-table td.slot-booked {
+        background: #f4565d !important;
+        cursor: not-allowed;
+    }
+
+    .booking-table td.slot-locked {
+        background: #b3b3b3 !important;
+        cursor: not-allowed;
+    }
+
+    .booking-table td.slot-selected {
+        background: #32a852 !important;
+        cursor: pointer;
+    }
+
+    .legend {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .legend-color {
+        width: 22px;
+        height: 22px;
+        border: 1px solid #aaa;
+        border-radius: 3px;
+    }
+
+    .booking-bottom {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 14px 25px;
+        box-shadow: 0 -3px 12px #0002;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .price-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .price-summary .total {
+        color: #17683d;
+        font-size: 21px;
+        font-weight: bold;
+    }
+
+    .next-button {
+        background: #ffc928;
+        color: #222;
+        border: none;
+        border-radius: 8px;
+        padding: 14px 35px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .next-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .price-note {
+        font-size: 13px;
+        color: #555;
+    }
+
+    @media (max-width: 576px) {
+        .booking-header h3 {
+            font-size: 18px;
+        }
+
+        .booking-bottom {
+            padding: 12px;
+        }
+
+        .next-button {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="booking-page">
+
+    <div class="booking-header">
+        <h3>ĐẶT LỊCH THEO SÂN - TRỰC QUAN</h3>
+        <p class="mb-0">{{ facility.name }}</p>
+    </div>
+
+    <div class="booking-container">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <h5>Chọn ngày và khung giờ</h5>
+
+            <form method="get">
+                <input
+                    type="date"
+                    name="date"
+                    value="{{ selected_date|date:'Y-m-d' }}"
+                    min="{{ today|date:'Y-m-d' }}"
+                    onchange="this.form.submit()"
+                    class="form-control"
+                >
+            </form>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-color"
+                      style="background:white"></span>
+                Trống
+            </div>
+
+            <div class="legend-item">
+                <span class="legend-color"
+                      style="background:#f4565d"></span>
+                Đã đặt
+            </div>
+
+            <div class="legend-item">
+                <span class="legend-color"
+                      style="background:#b3b3b3"></span>
+                Khóa / Chưa có giá
+            </div>
+
+            <div class="legend-item">
+                <span class="legend-color"
+                      style="background:#32a852"></span>
+                Đang chọn
+            </div>
+        </div>
+
+        <div class="alert alert-success mt-3">
+            Chọn các ô trắng liên tiếp trên cùng một sân.
+            Bạn có thể nhấn lần lượt hoặc kéo chuột.
+            Tiền cọc bằng 100% tổng tiền.
+        </div>
+
+        <div class="booking-table-wrapper">
+
+            <table class="booking-table">
+
+                <thead>
+                    <tr>
+                        <th class="court-name">Sân</th>
+
+                        {% for label in time_labels %}
+                            <th>{{ label }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for row in court_rows %}
+
+                    <tr>
+                        <td class="court-name">
+                            {{ row.court.name }}
+                        </td>
+
+                        {% for slot in row.slots %}
+
+                        <td
+                            class="{% if slot.status == 'booked' or slot.status == 'pending' %}slot-booked{% elif slot.status == 'locked' %}slot-locked{% else %}slot-free{% endif %}"
+                            data-status="{{ slot.status }}"
+                            data-court-id="{{ row.court.id }}"
+                            data-court-name="{{ row.court.name }}"
+                            data-index="{{ forloop.counter0 }}"
+                            data-start="{{ slot.start }}"
+                            data-end="{{ slot.end }}"
+                            data-price="{{ slot.price }}"
+                            data-hourly-price="{{ slot.hourly_price }}"
+                        ></td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="36">
+                            Cơ sở chưa có sân hoạt động.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+        <p class="price-note mt-2">
+            Giá được tính theo từng ô 30 phút.
+            Hệ thống sẽ kiểm tra lại giá và lịch trống
+            trước khi tạo đơn đặt sân.
+        </p>
+
+    </div>
+
+    <div class="booking-bottom">
+
+        <div class="price-summary">
+            <div id="selection-info">
+                Chưa chọn khung giờ
+            </div>
+
+            <div>
+                Tổng tiền:
+                <span class="total" id="total-price">0đ</span>
+            </div>
+
+            <div>
+                Cọc 100%:
+                <strong id="deposit-price">0đ</strong>
+                |
+                Còn lại:
+                <strong id="remaining-price">0đ</strong>
+            </div>
+        </div>
+
+        <form
+            method="post"
+            action="{% url 'facility_booking' facility.pk %}"
+            id="booking-form"
+        >
+            {% csrf_token %}
+
+            <input type="hidden" name="action" value="preview">
+
+            <input
+                type="hidden"
+                name="date"
+                value="{{ selected_date|date:'Y-m-d' }}"
+            >
+
+            <input
+                type="hidden"
+                name="court_id"
+                id="form-court-id"
+            >
+
+            <input
+                type="hidden"
+                name="start"
+                id="form-start"
+            >
+
+            <input
+                type="hidden"
+                name="end"
+                id="form-end"
+            >
+
+            <button
+                type="submit"
+                class="next-button"
+                id="next-button"
+                disabled
+            >
+                TIẾP THEO →
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+    const allCells = Array.from(
+        document.querySelectorAll(
+            ".booking-table td[data-status]"
+        )
+    );
+
+    let selectedCells = [];
+    let isDragging = false;
+    let dragAnchor = null;
+    let dragMoved = false;
+    let ignoreClick = false;
+
+    function isFree(cell) {
+        return (
+            cell &&
+            cell.dataset.status === "free" &&
+            cell.dataset.price !== "" &&
+            Number.isFinite(Number(cell.dataset.price))
+        );
+    }
+
+    function getCourtCells(courtId) {
+        return allCells.filter(
+            cell => cell.dataset.courtId === courtId
+        );
+    }
+
+    function selectRange(startCell, endCell) {
+        if (!isFree(startCell) || !isFree(endCell)) {
+            return false;
+        }
+
+        if (
+            startCell.dataset.courtId !==
+            endCell.dataset.courtId
+        ) {
+            return false;
+        }
+
+        const courtCells = getCourtCells(
+            startCell.dataset.courtId
+        );
+
+        const startIndex = Number(startCell.dataset.index);
+        const endIndex = Number(endCell.dataset.index);
+
+        const from = Math.min(startIndex, endIndex);
+        const to = Math.max(startIndex, endIndex);
+
+        const range = courtCells.filter(cell => {
+            const index = Number(cell.dataset.index);
+            return index >= from && index <= to;
+        });
+
+        if (!range.every(isFree)) {
+            return false;
+        }
+
+        selectedCells.forEach(cell => {
+            cell.classList.remove("slot-selected");
+        });
+
+        range.forEach(cell => {
+            cell.classList.add("slot-selected");
+        });
+
+        selectedCells = range;
+        updateSelectionInfo();
+
+        return true;
+    }
+
+    function formatMoney(amount) {
+        return new Intl.NumberFormat(
+            "vi-VN",
+            { maximumFractionDigits: 2 }
+        ).format(amount) + "đ";
+    }
+
+    function calculateTotal() {
+        return selectedCells.reduce(
+            (total, cell) => {
+                return total + Number(cell.dataset.price);
+            },
+            0
+        );
+    }
+
+    function updateSelectionInfo() {
+        const info = document.getElementById(
+            "selection-info"
+        );
+
+        const totalElement = document.getElementById(
+            "total-price"
+        );
+
+        const depositElement = document.getElementById(
+            "deposit-price"
+        );
+
+        const remainingElement = document.getElementById(
+            "remaining-price"
+        );
+
+        const nextButton = document.getElementById(
+            "next-button"
+        );
+
+        const courtInput = document.getElementById(
+            "form-court-id"
+        );
+
+        const startInput = document.getElementById(
+            "form-start"
+        );
+
+        const endInput = document.getElementById(
+            "form-end"
+        );
+
+        if (selectedCells.length === 0) {
+            info.textContent = "Chưa chọn khung giờ";
+            totalElement.textContent = "0đ";
+            depositElement.textContent = "0đ";
+            remainingElement.textContent = "0đ";
+
+            courtInput.value = "";
+            startInput.value = "";
+            endInput.value = "";
+
+            nextButton.disabled = true;
+            return;
+        }
+
+        const first = selectedCells[0];
+        const last = selectedCells[selectedCells.length - 1];
+
+        const durationMinutes = selectedCells.length * 30;
+        const durationHours = durationMinutes / 60;
+
+        const total = calculateTotal();
+
+        info.textContent =
+            first.dataset.courtName +
+            " | " +
+            first.dataset.start +
+            " - " +
+            last.dataset.end +
+            " | " +
+            durationHours.toLocaleString("vi-VN") +
+            " giờ";
+
+        totalElement.textContent = formatMoney(total);
+        depositElement.textContent = formatMoney(total);
+        remainingElement.textContent = "0đ";
+
+        courtInput.value = first.dataset.courtId;
+        startInput.value = first.dataset.start;
+        endInput.value = last.dataset.end;
+
+        nextButton.disabled = false;
+    }
+
+    function handleCellClick(cell) {
+        if (!isFree(cell)) {
+            return;
+        }
+
+        if (selectedCells.length === 0) {
+            selectRange(cell, cell);
+            return;
+        }
+
+        const first = selectedCells[0];
+        const last = selectedCells[selectedCells.length - 1];
+
+        if (
+            cell.dataset.courtId !==
+            first.dataset.courtId
+        ) {
+            selectRange(cell, cell);
+            return;
+        }
+
+        const clickedIndex = Number(cell.dataset.index);
+        const firstIndex = Number(first.dataset.index);
+        const lastIndex = Number(last.dataset.index);
+
+        if (clickedIndex === firstIndex - 1) {
+            selectRange(cell, last);
+        } else if (clickedIndex === lastIndex + 1) {
+            selectRange(first, cell);
+        } else {
+            selectRange(cell, cell);
+        }
+    }
+
+    allCells.forEach(cell => {
+
+        cell.addEventListener("mousedown", function(event) {
+            if (event.button !== 0 || !isFree(cell)) {
+                return;
+            }
+
+            event.preventDefault();
+
+            isDragging = true;
+            dragAnchor = cell;
+            dragMoved = false;
+        });
+
+        cell.addEventListener("mouseenter", function() {
+            if (!isDragging || !dragAnchor) {
+                return;
+            }
+
+            if (cell !== dragAnchor) {
+                dragMoved = true;
+                selectRange(dragAnchor, cell);
+            }
+        });
+
+        cell.addEventListener("click", function() {
+            if (ignoreClick) {
+                ignoreClick = false;
+                return;
+            }
+
+            if (dragMoved) {
+                dragMoved = false;
+                return;
+            }
+
+            handleCellClick(cell);
+        });
+    });
+
+    document.addEventListener("mouseup", function() {
+        if (isDragging && dragMoved) {
+            ignoreClick = true;
+        }
+
+        isDragging = false;
+        dragAnchor = null;
+        dragMoved = false;
+    });
+
+    updateSelectionInfo();
+</script>
+
+{% endblock %}

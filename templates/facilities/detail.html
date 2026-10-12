@@ -1,0 +1,115 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<a href="{% url 'home' %}"
+   class="btn btn-outline-secondary mb-4">
+    ← Quay lại trang chủ
+</a>
+
+<div class="mb-4">
+    <h1 class="fw-bold">{{ facility.name }}</h1>
+
+    <p class="text-muted">
+        {{ facility.address }},
+        {{ facility.ward }},
+        {{ facility.city }}
+    </p>
+
+    {% if facility.phone %}
+        <p>
+            <strong>Điện thoại:</strong>
+            {{ facility.phone }}
+        </p>
+    {% endif %}
+
+    {% if facility.description %}
+        <p>{{ facility.description }}</p>
+    {% endif %}
+</div>
+
+<h3 class="mb-4">Danh sách sân thể thao</h3>
+
+<div class="row g-4">
+    {% for item in court_data %}
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+
+                {% if item.primary_image %}
+                    <img
+                        src="{{ item.primary_image.image.url }}"
+                        class="card-img-top"
+                        alt="{{ item.court.name }}"
+                        style="height:240px;object-fit:cover;"
+                    >
+                {% else %}
+                    <div class="bg-light text-muted
+                                d-flex align-items-center
+                                justify-content-center"
+                         style="height:240px;">
+                        Chưa có hình ảnh
+                    </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <h4>{{ item.court.name }}</h4>
+
+                    <p>
+                        <strong>Môn thể thao:</strong>
+                        {{ item.court.sport_type.name }}
+                    </p>
+
+                    {% if item.court.description %}
+                        <p>{{ item.court.description }}</p>
+                    {% endif %}
+
+                    {% if item.min_price is not None %}
+                        <p class="text-success fw-bold">
+                            Giá từ:
+                            {{ item.min_price|floatformat:0 }}
+                            đ/giờ
+                        </p>
+                    {% else %}
+                        <p class="text-muted">
+                            Chưa cập nhật bảng giá
+                        </p>
+                    {% endif %}
+
+                    <h6>Giờ hoạt động</h6>
+
+                    <ul class="small">
+                        {% for hour in item.operating_hours %}
+                            <li>
+                                Ngày {{ hour.day_of_week }}:
+                                {% if hour.is_closed %}
+                                    Nghỉ
+                                {% else %}
+                                    {{ hour.open_time|time:"H:i" }}
+                                    -
+                                    {{ hour.close_time|time:"H:i" }}
+                                {% endif %}
+                            </li>
+                        {% empty %}
+                            <li>Chưa cập nhật giờ mở cửa</li>
+                        {% endfor %}
+                    </ul>
+
+                    <button
+                        class="btn btn-success w-100"
+                        disabled>
+                        Đặt sân (sắp có)
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Cơ sở này chưa có sân đang hoạt động.
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

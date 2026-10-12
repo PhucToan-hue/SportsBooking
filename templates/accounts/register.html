@@ -1,0 +1,168 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Đăng ký | MatchUp</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="{% static 'css/auth.css' %}">
+</head>
+
+<body>
+<div class="mu-auth-page">
+
+    <div class="mu-auth-card">
+
+        <a href="/" class="mu-auth-logo">
+            <span class="mu-auth-logo-icon">
+                <i class="fa-solid fa-trophy"></i>
+            </span>
+            <span>Match<b>Up</b></span>
+        </a>
+
+        <div class="mu-auth-heading">
+            <h1>Tạo tài khoản mới</h1>
+            <p>Tham gia MatchUp để đặt sân nhanh chóng</p>
+        </div>
+
+        <form action="" method="post">
+            {% csrf_token %}
+
+            <div class="mu-auth-field">
+                <label for="fullname">Họ và tên</label>
+                <div class="mu-auth-input">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text"
+                           id="fullname"
+                           name="fullname"
+                           placeholder="Nhập họ và tên"
+                           autocomplete="name"
+                           required>
+                </div>
+            </div>
+
+            <div class="mu-auth-field">
+                <label for="email">Email</label>
+                <div class="mu-auth-input">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           placeholder="example@gmail.com"
+                           autocomplete="email"
+                           required>
+                </div>
+            </div>
+
+            <div class="mu-auth-field">
+                <label for="password">Mật khẩu</label>
+                <div class="mu-auth-input">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           placeholder="Tối thiểu 8 ký tự"
+                           minlength="8"
+                           autocomplete="new-password"
+                           required>
+                    <button type="button"
+                            class="mu-toggle-password"
+                            aria-label="Hiện mật khẩu"
+                            onclick="togglePassword('password', this)">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mu-auth-field">
+                <label for="confirm_password">
+                    Xác nhận mật khẩu
+                </label>
+                <div class="mu-auth-input">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password"
+                           id="confirm_password"
+                           name="confirm_password"
+                           placeholder="Nhập lại mật khẩu"
+                           minlength="8"
+                           autocomplete="new-password"
+                           required>
+                </div>
+            </div>
+
+            <label class="mu-auth-agree">
+                <input type="checkbox" required>
+                <span>
+                    Tôi đồng ý với
+                    <a href="#">Điều khoản sử dụng</a>
+                    và
+                    <a href="#">Chính sách bảo mật</a>
+                </span>
+            </label>
+
+            <button type="submit" class="mu-auth-submit">
+                Tạo tài khoản
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </form>
+
+        <div class="mu-auth-bottom">
+            Đã có tài khoản?
+            <a href="/accounts/login/">Đăng nhập</a>
+        </div>
+
+        <a href="/" class="mu-auth-back">
+            <i class="fa-solid fa-arrow-left"></i>
+            Quay về trang chủ
+        </a>
+
+    </div>
+</div>
+
+<script>
+function togglePassword(id, button) {
+    const input = document.getElementById(id);
+    const icon = button.querySelector("i");
+
+    const isHidden = input.type === "password";
+    input.type = isHidden ? "text" : "password";
+
+    icon.className = isHidden
+        ? "fa-regular fa-eye-slash"
+        : "fa-regular fa-eye";
+
+    button.setAttribute(
+        "aria-label",
+        isHidden ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+    );
+}
+
+document.querySelector("form").addEventListener("submit", function(e) {
+    const password = document.getElementById("password");
+    const confirm = document.getElementById("confirm_password");
+
+    if (password.value !== confirm.value) {
+        e.preventDefault();
+        confirm.setCustomValidity("Mật khẩu xác nhận không khớp");
+        confirm.reportValidity();
+    }
+});
+
+document.getElementById("confirm_password")
+    .addEventListener("input", function() {
+        this.setCustomValidity("");
+    });
+</script>
+</body>
+</html>

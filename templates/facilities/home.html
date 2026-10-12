@@ -1,0 +1,651 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Đặt sân Pickleball và Bóng đá | MatchUp
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* HERO */
+    .mu-hero {
+        position: relative;
+        min-height: 370px;
+        display: flex;
+        align-items: center;
+        background:
+            linear-gradient(
+                90deg,
+                rgba(0, 43, 30, .96) 0%,
+                rgba(0, 64, 42, .89) 46%,
+                rgba(0, 48, 33, .35) 100%
+            ),
+            url("{% static 'images/hero-sports.jpg' %}")
+            center / cover no-repeat;
+            }
+
+    .mu-hero::after {
+        content: "";
+        position: absolute;
+        right: -100px;
+        top: -150px;
+        width: 430px;
+        height: 430px;
+        border: 55px solid rgba(53, 225, 112, .10);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .mu-hero-inner {
+        position: relative;
+        z-index: 1;
+        padding: 60px 0 85px;
+    }
+
+    .mu-hero-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 15px;
+        background: rgba(46, 200, 111, .18);
+        border: 1px solid rgba(107, 243, 153, .35);
+        border-radius: 30px;
+        color: #b6f9cb;
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 22px;
+    }
+
+    .mu-hero h1 {
+        font-size: sans-serif(32px, 4vw, 52px);
+        font-weight: 800;
+        line-height: 1.18;
+        letter-spacing: -1.3px;
+        max-width: 700px;
+        color: #4aee81;
+    }
+
+    .mu-hero h1 span {
+        color: #4aee81;
+    }
+
+    .mu-hero p {
+        color: #e2f3e8;
+        font-size: 16px;
+        line-height: 1.9;
+        max-width: 560px;
+        margin-top: 20px;
+    }
+
+    .mu-hero-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 25px;
+    }
+
+    .mu-hero-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 23px;
+        border-radius: 30px;
+        background: #13bd5b;
+        color: white;
+        text-decoration: none;
+        font-weight: 700;
+        transition: .2s;
+    }
+
+    .mu-hero-button:hover {
+        background: #0a9846;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .mu-hero-button-outline {
+        background: transparent;
+        border: 1px solid #65e995;
+    }
+
+    .mu-hero-button-outline:hover {
+        background: rgba(255, 255, 255, .1);
+    }
+
+    /* SEARCH */
+    .mu-search-wrap {
+        position: relative;
+        z-index: 2;
+        margin-top: -45px;
+    }
+
+    .mu-search-box {
+        background: white;
+        border-radius: 17px;
+        padding: 22px;
+        box-shadow: 0 12px 35px rgba(0, 55, 30, .13);
+        border: 1px solid #edf2ee;
+    }
+
+    .mu-search-box .form-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #385344;
+    }
+
+    .mu-search-box .form-control,
+    .mu-search-box .form-select {
+        min-height: 49px;
+        border: 1px solid #e0e8e2;
+        border-radius: 10px;
+        background-color: #fcfdfc;
+        font-size: 14px;
+    }
+
+    .mu-search-box .form-control:focus,
+    .mu-search-box .form-select:focus {
+        border-color: #18a35b;
+        box-shadow: 0 0 0 .2rem rgba(24, 163, 91, .1);
+    }
+
+    .mu-search-submit {
+        width: 100%;
+        min-height: 49px;
+        border: 0;
+        border-radius: 10px;
+        background: #007c3f;
+        color: white;
+        font-weight: 700;
+        transition: .2s;
+    }
+
+    .mu-search-submit:hover {
+        background: #005e31;
+    }
+
+    /* SECTIONS */
+    .mu-home-section {
+        padding-top: 46px;
+    }
+    .mu-section-title {
+        font-size: 23px;
+        font-weight: 800;
+        color: #143b2b;
+        letter-spacing: -.4px;
+        margin-bottom: 22px;
+    }
+
+    /* SPORT CHIPS */
+    .mu-sport-filters {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .mu-sport-filter {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 22px;
+        border-radius: 30px;
+        background: #f0f3f1;
+        border: 1px solid #e9eeea;
+        color: #284034;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 700;
+        transition: .2s;
+    }
+
+    .mu-sport-filter:hover {
+        background: #e3f5e9;
+        color: #007e40;
+    }
+
+    .mu-sport-filter.active {
+        background: #007c3f;
+        border-color: #007c3f;
+        color: white;
+        box-shadow: 0 5px 15px rgba(0, 124, 63, .18);
+    }
+
+    /* FACILITY CARDS */
+    .mu-facility-card {
+        height: 100%;
+        border: 1px solid #edf1ee;
+        border-radius: 15px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 5px 18px rgba(0, 0, 0, .045);
+        transition: .25s;
+    }
+
+    .mu-facility-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 13px 28px rgba(0, 66, 36, .12);
+    }
+
+    .mu-facility-media {
+        height: 210px;
+        position: relative;
+        overflow: hidden;
+        background:
+            linear-gradient(135deg, #0d6b43, #003e2b);
+    }
+
+    .mu-facility-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform .35s;
+    }
+
+    .mu-facility-card:hover .mu-facility-media img {
+        transform: scale(1.05);
+    }
+
+    .mu-facility-placeholder {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        gap: 10px;
+    }
+
+    .mu-facility-placeholder .icon {
+        font-size: 48px;
+    }
+
+    .mu-facility-placeholder span:last-child {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+
+    .mu-facility-badge {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        padding: 7px 12px;
+        background: rgba(0, 77, 42, .9);
+        color: white;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .mu-facility-body {
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        min-height: 215px;
+    }
+
+    .mu-facility-name {
+        font-size: 19px;
+        font-weight: 800;
+        color: #18392a;
+        margin-bottom: 12px;
+    }
+
+    .mu-facility-address {
+        font-size: 13px;
+        color: #728078;
+        line-height: 1.7;
+        margin-bottom: 12px;
+    }
+
+    .mu-facility-desc {
+        font-size: 13px;
+        color: #718078;
+        line-height: 1.7;
+    }
+
+    .mu-facility-bottom {
+        margin-top: auto;
+        padding-top: 17px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        border-top: 1px solid #edf1ee;
+    }
+
+    .mu-facility-status {
+        color: #16834b;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .mu-book-button {
+        background: #078447;
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        padding: 10px 19px;
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .mu-book-button:hover {
+        background: #005f32;
+        color: white;
+    }
+
+    /* EMPTY */
+    .mu-empty {
+        background: white;
+        border: 1px dashed #cdded3;
+        border-radius: 16px;
+        text-align: center;
+        padding: 55px 20px;
+    }
+
+    .mu-empty-icon {
+        font-size: 43px;
+        margin-bottom: 12px;
+    }
+
+    @media (max-width: 767px) {
+        .mu-hero {
+            min-height: 340px;
+        }
+
+        .mu-hero-inner {
+            padding: 48px 0 82px;
+        }
+
+        .mu-search-box {
+            padding: 17px;
+        }
+
+        .mu-section-title {
+            font-size: 21px;
+        }
+
+        .mu-facility-media {
+            height: 205px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="mu-hero">
+
+    <div class="container mu-hero-inner">
+
+        <div class="mu-hero-label">
+            ✨ Nền tảng đặt sân thể thao MatchUp
+        </div>
+
+        <h1>
+            Đặt sân thể thao
+            <span>dễ dàng</span>
+            hơn bao giờ hết
+        </h1>
+
+        <p>
+            Khám phá các sân Pickleball và Bóng đá,
+            tìm địa điểm phù hợp và đặt lịch nhanh chóng.
+            Chơi thể thao, kết nối đam mê cùng MatchUp.
+        </p>
+
+        <div class="mu-hero-actions">
+
+            <a
+                href="#facility-list"
+                class="mu-hero-button"
+            >
+                Khám phá ngay →
+            </a>
+
+            <a
+                href="#search-section"
+                class="mu-hero-button mu-hero-button-outline"
+            >
+                Tìm sân phù hợp
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- SEARCH -->
+<section
+    id="search-section"
+    class="container mu-search-wrap"
+>
+
+    <div class="mu-search-box">
+
+        <form
+            method="get"
+            action="{% url 'home' %}"
+        >
+
+            <div class="row g-3 align-items-end">
+
+                <div class="col-lg-6">
+
+                    <label class="form-label">
+                        🔎 Tìm sân thể thao
+                    </label>
+
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ keyword }}"
+                        class="form-control"
+                        placeholder="Tên sân, địa chỉ, khu vực..."
+                    >
+
+                </div>
+
+                <div class="col-lg-4">
+
+                    <label class="form-label">
+                        🏓 Môn thể thao
+                    </label>
+
+                    <select
+                        name="sport"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            Tất cả môn
+                        </option>
+
+                        <option
+                            value="pickleball"
+                            {% if sport == "pickleball" %}selected{% endif %}
+                        >
+                            Pickleball
+                        </option>
+
+                        <option
+                            value="football"
+                            {% if sport == "football" %}selected{% endif %}
+                        >
+                            Bóng đá
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-lg-2">
+
+                    <button
+                        type="submit"
+                        class="mu-search-submit"
+                    >
+                        🔎 Tìm kiếm
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+<div class="container">
+
+
+    <!-- FACILITY LIST -->
+    <section
+        id="facility-list"
+        class="mu-home-section pb-4"
+    >
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+
+            <h2 class="mu-section-title mb-0">
+                🏢 Danh sách cơ sở thể thao
+            </h2>
+
+            {% if sport == "pickleball" %}
+                <span class="badge text-bg-success">
+                    Đang xem: Pickleball
+                </span>
+            {% elif sport == "football" %}
+                <span class="badge text-bg-success">
+                    Đang xem: Bóng đá
+                </span>
+            {% endif %}
+
+        </div>
+
+        <div class="row g-4">
+
+            {% for facility in facilities %}
+
+                <div class="col-md-6 col-lg-4">
+
+                    <article class="mu-facility-card">
+
+                        <!-- IMAGE -->
+                        <div class="mu-facility-media">
+
+                            {% if facility.image %}
+
+                                <img
+                                    src="{{ facility.image.url }}"
+                                    alt="Ảnh cơ sở {{ facility.name }}"
+                                    loading="lazy"
+                                >
+
+                            {% else %}
+
+                                <div class="mu-facility-placeholder">
+                                    <span class="icon">🏟️</span>
+                                    <span>MATCHUP SPORTS</span>
+                                </div>
+
+                            {% endif %}
+
+                            <div class="mu-facility-badge">
+                                {% if sport == "pickleball" %}
+                                    🏓 Pickleball
+                                {% elif sport == "football" %}
+                                    ⚽ Bóng đá
+                                {% else %}
+                                    🏟️ Cơ sở thể thao
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                        <!-- CONTENT -->
+                        <div class="mu-facility-body">
+
+                            <h3 class="mu-facility-name">
+                                {{ facility.name }}
+                            </h3>
+
+                            <p class="mu-facility-address">
+                                📍 {{ facility.address }},
+                                {{ facility.city }}
+                            </p>
+
+                            {% if facility.description %}
+                                <p class="mu-facility-desc">
+                                    {{ facility.description|truncatechars:110 }}
+                                </p>
+                            {% endif %}
+
+                            <div class="mu-facility-bottom">
+
+                                <span class="mu-facility-status">
+                                    ● Đang hoạt động
+                                </span>
+
+                                <a
+                                    href="{% url 'facility_booking' facility.pk %}"
+                                    class="mu-book-button"
+                                >
+                                    Đặt lịch →
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            {% empty %}
+
+                <div class="col-12">
+
+                    <div class="mu-empty">
+
+                        <div class="mu-empty-icon">
+                            🔎
+                        </div>
+
+                        <h4 class="fw-bold">
+                            Chưa tìm thấy sân phù hợp
+                        </h4>
+
+                        <p class="text-muted">
+                            Hãy thử tìm kiếm bằng tên cơ sở,
+                            khu vực hoặc môn thể thao khác.
+                        </p>
+
+                        <a
+                            href="{% url 'home' %}"
+                            class="btn btn-success rounded-pill px-4 mt-2"
+                        >
+                            Xem tất cả sân
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,383 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .confirm-page {
+        background: #edf7ee;
+        min-height: 85vh;
+        padding: 40px 16px;
+    }
+
+    .confirm-card {
+        max-width: 650px;
+        margin: auto;
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 5px 20px #00000012;
+    }
+
+    .confirm-title {
+        color: #17683d;
+        font-weight: bold;
+        margin-bottom: 24px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .info-row span:first-child {
+        color: #666;
+    }
+
+    .info-row strong {
+        text-align: right;
+    }
+
+    .total-price {
+        font-size: 25px;
+        color: #17683d;
+        font-weight: bold;
+    }
+
+    .confirm-button {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        background: #17683d;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        margin-top: 20px;
+        cursor: pointer;
+    }
+
+    .confirm-button:hover {
+        background: #11532f;
+        color: white;
+    }
+
+    .confirm-button:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+
+    .payment-button {
+        display: block;
+        width: 100%;
+        padding: 16px;
+        background: #ffc928;
+        color: #222;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        margin-top: 20px;
+        font-size: 17px;
+    }
+
+    .payment-button:hover {
+        background: #efb90d;
+        color: #222;
+    }
+
+    .back-button {
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        color: #555;
+        text-decoration: none;
+    }
+
+    .success-code {
+        background: #edf7ee;
+        border-radius: 10px;
+        padding: 18px;
+        text-align: center;
+        font-size: 22px;
+        font-weight: bold;
+        color: #17683d;
+        margin: 18px 0;
+        overflow-wrap: anywhere;
+    }
+
+    .payment-note {
+        background: #fff8df;
+        border-left: 4px solid #ffc928;
+        padding: 14px;
+        border-radius: 6px;
+        margin-top: 18px;
+        font-size: 14px;
+    }
+
+    @media (max-width: 576px) {
+        .confirm-card {
+            padding: 20px;
+        }
+
+        .confirm-title {
+            font-size: 21px;
+        }
+
+        .info-row {
+            font-size: 14px;
+        }
+    }
+</style>
+
+<div class="confirm-page">
+
+    <div class="confirm-card">
+
+        {% if error %}
+
+            <h3 class="confirm-title">
+                Không thể đặt sân
+            </h3>
+
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+
+            <a
+                href="{% url 'facility_booking' facility.pk %}"
+                class="back-button"
+            >
+                ← Quay lại chọn khung giờ
+            </a>
+
+        {% elif booking_data %}
+
+            {% if created_booking %}
+
+                <h3 class="confirm-title">
+                    Đã tạo đơn đặt sân!
+                </h3>
+
+                <div class="alert alert-success">
+                    Đơn đặt sân đã được lưu thành công.
+                    Vui lòng thanh toán tiền cọc để
+                    chủ sân kiểm tra và xác nhận lịch.
+                </div>
+
+                <p class="text-center mb-1">
+                    Mã đơn đặt sân của bạn
+                </p>
+
+                <div class="success-code">
+                    {{ created_booking.booking_code }}
+                </div>
+
+            {% else %}
+
+                <h3 class="confirm-title">
+                    Xác nhận thông tin đặt sân
+                </h3>
+
+                <p class="text-muted">
+                    Vui lòng kiểm tra thông tin
+                    trước khi tạo đơn đặt sân.
+                </p>
+
+            {% endif %}
+
+            <div class="info-row">
+                <span>Cơ sở</span>
+                <strong>{{ facility.name }}</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Sân</span>
+                <strong>{{ booking_data.court.name }}</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Ngày đặt</span>
+                <strong>
+                    {{ booking_data.selected_date|date:"d/m/Y" }}
+                </strong>
+            </div>
+
+            <div class="info-row">
+                <span>Giờ bắt đầu</span>
+                <strong>
+                    {{ booking_data.start_clock|time:"H:i" }}
+                </strong>
+            </div>
+
+            <div class="info-row">
+                <span>Giờ kết thúc</span>
+                <strong>
+                    {{ booking_data.end_clock|time:"H:i" }}
+                </strong>
+            </div>
+
+            <div class="info-row">
+                <span>Thời lượng</span>
+                <strong>
+                    {{ booking_data.duration_minutes }} phút
+                </strong>
+            </div>
+
+            <div class="info-row">
+                <span>Tổng tiền</span>
+                <strong class="total-price">
+                    {{ booking_data.total|floatformat:0 }}đ
+                </strong>
+            </div>
+
+            <div class="info-row">
+                <span>Đặt cọc 100%</span>
+                <strong>
+                    {{ booking_data.deposit|floatformat:0 }}đ
+                </strong>
+            </div>
+
+            <div class="info-row">
+                <span>Còn lại</span>
+                <strong>
+                    {{ booking_data.remaining|floatformat:0 }}đ
+                </strong>
+            </div>
+
+            {% if created_booking %}
+
+                <div class="alert alert-warning mt-4">
+                    <strong>Trạng thái đơn:</strong>
+                    {{ created_booking.get_status_display }}
+
+                    {% if created_booking.deposit_deadline %}
+                        <p class="mb-0 mt-2">
+                            <strong>Hạn báo chuyển khoản:</strong>
+                            {{ created_booking.deposit_deadline|date:"H:i d/m/Y" }}
+                        </p>
+                    {% endif %}
+                </div>
+
+                <div class="payment-note">
+                    <strong>Hướng dẫn thanh toán:</strong>
+                    <p class="mb-0 mt-2">
+                        Nhấn nút Thanh toán ngay để xem
+                        mã VietQR của chủ sân.
+                        Bạn cần chuyển khoản đúng số tiền
+                        và nội dung chuyển khoản theo mã đơn.
+                    </p>
+                </div>
+
+                <a
+                    href="{% url 'payment_detail' created_booking.id %}"
+                    class="payment-button"
+                >
+                    THANH TOÁN NGAY →
+                </a>
+
+                <a
+                    href="{% url 'facility_booking' facility.pk %}"
+                    class="back-button"
+                >
+                    ← Quay lại bảng lịch
+                </a>
+
+            {% else %}
+
+                <div class="alert alert-warning mt-4">
+                    Tiền đặt cọc bằng 100%
+                    tổng tiền thuê sân.
+                    Sau khi xác nhận, đơn sẽ có
+                    trạng thái Chờ đặt cọc.
+                </div>
+
+                <form
+                    method="post"
+                    action="{% url 'facility_booking' facility.pk %}"
+                    id="confirm-form"
+                >
+                    {% csrf_token %}
+
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="create"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="court_id"
+                        value="{{ booking_data.court.id }}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="date"
+                        value="{{ booking_data.selected_date|date:'Y-m-d' }}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="start"
+                        value="{{ booking_data.start_clock|time:'H:i' }}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="end"
+                        value="{{ booking_data.end_clock|time:'H:i' }}"
+                    >
+
+                    <button
+                        type="submit"
+                        class="confirm-button"
+                        id="confirm-submit"
+                    >
+                        XÁC NHẬN ĐẶT SÂN
+                    </button>
+
+                </form>
+
+                <a
+                    href="{% url 'facility_booking' facility.pk %}?date={{ booking_data.selected_date|date:'Y-m-d' }}"
+                    class="back-button"
+                >
+                    ← Quay lại chọn giờ
+                </a>
+
+            {% endif %}
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script>
+    const confirmForm = document.getElementById(
+        "confirm-form"
+    );
+
+    if (confirmForm) {
+        confirmForm.addEventListener(
+            "submit",
+            function () {
+                const button = document.getElementById(
+                    "confirm-submit"
+                );
+
+                button.disabled = true;
+                button.textContent = "ĐANG TẠO ĐƠN...";
+            }
+        );
+    }
+</script>
+
+{% endblock %}

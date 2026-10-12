@@ -1,0 +1,24 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="fw-bold">
+        HỆ THỐNG ĐẶT SÂN THỂ THAO
+    </h1>
+
+    <p class="lead mt-3">
+        Tìm kiếm và đặt sân Pickleball,
+        Bóng đá trực tuyến
+    </p>
+
+    <p class="text-muted">
+        Đặt sân nhanh chóng - Tiện lợi - An toàn
+    </p>
+
+    <a href="{% url 'register' %}"
+       class="btn btn-success btn-lg mt-3">
+        Bắt đầu ngay
+    </a>
+</div>
+{% endblock %}

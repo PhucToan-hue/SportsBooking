@@ -1,0 +1,181 @@
+
+:root {
+    --primary: #148a55;
+    --primary-dark: #0c6940;
+    --background: #f6f8f7;
+    --text: #1c3027;
+}
+
+body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: var(--background);
+    color: var(--text);
+}
+
+.navbar {
+    min-height: 76px;
+}
+
+.navbar-brand {
+    font-size: 24px;
+    letter-spacing: -0.7px;
+}
+
+.nav-link {
+    font-weight: 500;
+    margin: 0 10px;
+}
+
+.nav-link:hover {
+    color: var(--primary) !important;
+}
+
+.btn-success {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-success:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.hero {
+    background: linear-gradient(
+        110deg,
+        #0b6b43,
+        #1a9b69
+    );
+    color: white;
+    border-radius: 24px;
+    padding: 70px 40px;
+}
+
+.hero h1 {
+    font-size: clamp(30px, 4vw, 48px);
+    font-weight: 800;
+}
+
+.search-panel {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.facility-card {
+    background: white;
+    border: none;
+    border-radius: 18px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.facility-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+}
+
+.facility-image {
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+}
+
+.facility-placeholder {
+    height: 210px;
+    background: #e5eee9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #557465;
+}
+
+.sport-chip {
+    display: inline-block;
+    padding: 9px 18px;
+    border-radius: 30px;
+    background: white;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    border: 1px solid #dce8e1;
+}
+
+.sport-chip:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.site-footer {
+    background: #153c2b;
+    color: white;
+}
+
+.site-footer p {
+    color: #d0dfd7;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 40px 22px;
+    }
+
+    .navbar-brand {
+        font-size: 20px;
+    }
+}
+
+/* Đồng bộ font toàn bộ website */
+html, body,
+button, input, select, textarea {
+    font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+/* Đồng bộ font trong danh sách cơ sở */
+.mu-facilities,
+.mu-facilities *,
+.mu-facility-card,
+.mu-facility-card * {
+    font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+/* Tiêu đề danh sách */
+.mu-facilities h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #073b2d;
+    letter-spacing: -0.5px;
+}
+
+/* Tiêu đề cơ sở */
+.mu-facility-card h3 {
+    font-size: 19px;
+    font-weight: 700;
+    color: #073b2d;
+    line-height: 1.5;
+    letter-spacing: -0.3px;
+}
+
+/* Địa chỉ */
+.mu-facility-card p {
+    font-size: 13px;
+    font-weight: 400;
+    color: #64748b;
+    line-height: 1.7;
+}
+
+/* Trạng thái */
+.mu-facility-card .status {
+    font-size: 12px;
+    font-weight: 600;
+    color: #008744;
+}
+
+/* Nút đặt lịch */
+.mu-facility-card a,
+.mu-facility-card button {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+}

@@ -1,0 +1,233 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .payment-page {
+        background: #edf7ee;
+        min-height: 85vh;
+        padding: 35px 15px;
+    }
+
+    .payment-card {
+        background: white;
+        max-width: 620px;
+        margin: auto;
+        padding: 28px;
+        border-radius: 14px;
+        box-shadow: 0 4px 16px #00000012;
+    }
+
+    .payment-title {
+        color: #17683d;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .qr-image {
+        display: block;
+        width: 270px;
+        max-width: 100%;
+        margin: 20px auto;
+    }
+
+    .payment-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .payment-row strong {
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .payment-amount {
+        font-size: 24px;
+        color: #17683d;
+    }
+
+    .payment-button {
+        width: 100%;
+        border: none;
+        background: #17683d;
+        color: white;
+        padding: 13px;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+</style>
+
+<div class="payment-page">
+    <div class="payment-card">
+
+        <h3 class="payment-title">
+            THANH TOÁN ĐẶT SÂN
+        </h3>
+
+        <div class="payment-row">
+            <span>Mã đơn</span>
+            <strong>{{ booking.booking_code }}</strong>
+        </div>
+
+        <div class="payment-row">
+            <span>Cơ sở</span>
+            <strong>{{ booking.court.facility.name }}</strong>
+        </div>
+
+        <div class="payment-row">
+            <span>Sân</span>
+            <strong>{{ booking.court.name }}</strong>
+        </div>
+
+        <div class="payment-row">
+            <span>Trạng thái</span>
+            <strong>{{ booking.get_status_display }}</strong>
+        </div>
+
+        {% if booking.status == "PENDING_DEPOSIT" %}
+
+            {% if bank_account and qr_url %}
+
+                <p class="text-center mt-4">
+                    Quét mã QR để chuyển khoản
+                    trực tiếp cho chủ sân.
+                </p>
+
+                <img
+                    src="{{ qr_url }}"
+                    alt="QR chuyển khoản ngân hàng"
+                    class="qr-image"
+                >
+
+                <div class="payment-row">
+                    <span>Ngân hàng</span>
+                    <strong>{{ bank_account.bank_code }}</strong>
+                </div>
+
+                <div class="payment-row">
+                    <span>Số tài khoản</span>
+                    <strong>{{ bank_account.account_number }}</strong>
+                </div>
+
+                <div class="payment-row">
+                    <span>Chủ tài khoản</span>
+                    <strong>{{ bank_account.account_name }}</strong>
+                </div>
+
+                <div class="payment-row">
+                    <span>Số tiền cọc</span>
+                    <strong class="payment-amount">
+                        {{ booking.deposit_amount|floatformat:0 }}đ
+                    </strong>
+                </div>
+
+                <div class="payment-row">
+                    <span>Nội dung chuyển khoản</span>
+                    <strong>{{ booking.booking_code }}</strong>
+                </div>
+
+                {% if booking.deposit_deadline %}
+                    <div class="alert alert-warning mt-3">
+                        Hạn báo chuyển khoản:
+                        {{ booking.deposit_deadline|date:"H:i d/m/Y" }}
+                    </div>
+                {% endif %}
+
+                {% if error %}
+                    <div class="alert alert-danger mt-3">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                <hr>
+
+                <h5>Thông báo đã chuyển khoản</h5>
+
+                <form
+                    method="post"
+                    enctype="multipart/form-data"
+                    action="{% url 'submit_payment' booking.id %}"
+                >
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Mã giao dịch (nếu có)
+                        </label>
+
+                        <input
+                            type="text"
+                            name="transfer_reference"
+                            maxlength="100"
+                            class="form-control"
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Ảnh biên lai (nếu có)
+                        </label>
+
+                        <input
+                            type="file"
+                            name="image"
+                            accept="image/*"
+                            class="form-control"
+                        >
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="payment-button"
+                    >
+                        TÔI ĐÃ CHUYỂN KHOẢN
+                    </button>
+                </form>
+
+            {% else %}
+
+                <div class="alert alert-warning mt-4">
+                    Chủ sân chưa cấu hình tài khoản
+                    ngân hàng mặc định đang hoạt động.
+                </div>
+
+            {% endif %}
+
+        {% elif booking.status == "PENDING_VERIFICATION" %}
+
+            <div class="alert alert-info mt-4">
+                Đã nhận thông tin chuyển khoản của bạn.
+                Đơn đang chờ chủ sân kiểm tra tiền thực tế.
+            </div>
+
+        {% elif booking.status == "CONFIRMED" %}
+
+            <div class="alert alert-success mt-4">
+                Chủ sân đã xác nhận thanh toán.
+                Lịch đặt sân của bạn đã được xác nhận.
+            </div>
+
+        {% else %}
+
+            <div class="alert alert-secondary mt-4">
+                Đơn hiện có trạng thái:
+                {{ booking.get_status_display }}
+            </div>
+
+        {% endif %}
+
+        <a
+            href="{% url 'facility_booking' booking.court.facility.id %}"
+            class="d-block text-center mt-4"
+        >
+            ← Quay lại bảng lịch
+        </a>
+
+    </div>
+</div>
+
+{% endblock %}

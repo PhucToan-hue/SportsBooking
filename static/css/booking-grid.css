@@ -1,0 +1,319 @@
+
+/* Ẩn navbar và footer chung ở trang đặt lịch */
+body:has(.alobo-booking) > nav,
+body:has(.alobo-booking) > footer {
+    display: none !important;
+}
+
+body:has(.alobo-booking) {
+    margin: 0;
+    background: #eafbf3;
+    overflow-x: hidden;
+}
+
+.alobo-booking {
+    min-height: 100vh;
+    background: #eafbf3;
+    font-family: Arial, sans-serif;
+    padding-bottom: 105px;
+}
+
+/* HEADER */
+
+.booking-header {
+    background: #006b38;
+    color: white;
+    min-height: 122px;
+}
+
+.booking-top {
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.booking-top h1 {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+}
+
+.back-btn {
+    position: absolute;
+    left: 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 25px;
+}
+
+.booking-toolbar {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 10px 10px 12px;
+}
+
+.booking-legend {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.booking-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.legend-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.legend-free {
+    background: white;
+}
+
+.legend-booked {
+    background: #fa575d;
+}
+
+.legend-locked {
+    background: #999;
+}
+
+.legend-event {
+    background: #e15ad9;
+}
+
+.price-link {
+    color: #ffeb59;
+    text-decoration: underline;
+}
+
+.booking-date input {
+    border: none;
+    background: #69b89b;
+    color: white;
+    padding: 9px 12px;
+    border-radius: 5px;
+    font-weight: bold;
+    color-scheme: dark;
+}
+
+/* NOTICE */
+
+.booking-notice {
+    text-align: center;
+    background: #e3fff2;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #35624b;
+    border-bottom: 2px solid #9cd7c1;
+}
+
+.booking-notice strong {
+    color: #ff713c;
+}
+
+/* SCHEDULE */
+
+.schedule-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.schedule-table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    user-select: none;
+}
+
+.schedule-table thead th {
+    background: #b9f0f9;
+    color: #286b62;
+    height: 31px;
+    min-width: 49px;
+    width: 49px;
+    font-size: 12px;
+    font-weight: normal;
+    text-align: center;
+    border-bottom: 1px solid #80c7d3;
+}
+
+.schedule-table .court-name-header {
+    min-width: 55px;
+    width: 55px;
+    position: sticky;
+    left: 0;
+    z-index: 3;
+}
+
+.schedule-table .court-name {
+    min-width: 55px;
+    width: 55px;
+    height: 37px;
+    background: #d9fff0;
+    color: #326f5a;
+    font-size: 12px;
+    font-weight: normal;
+    text-align: center;
+    white-space: nowrap;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    border: 1px solid #a3d5bd;
+}
+
+.time-cell {
+    min-width: 49px;
+    width: 49px;
+    height: 37px;
+    border: 1px solid #8c8c8c;
+    cursor: default;
+    padding: 0;
+}
+
+.time-cell.free {
+    background: #ffffff;
+    cursor: crosshair;
+}
+
+.time-cell.free:hover {
+    background: #b7e9c6;
+}
+
+.time-cell.booked {
+    background: #f4565d;
+}
+
+.time-cell.locked {
+    background: #b3b3b3;
+}
+
+.time-cell.event {
+    background: #e15ad9;
+}
+
+.time-cell.selected {
+    background: #35a950 !important;
+    border-color: #15853a;
+}
+
+.empty-schedule {
+    background: white;
+    text-align: center;
+    padding: 25px;
+}
+
+/* BOTTOM */
+
+.booking-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 8px 9px 10px;
+    background: #eafbf3;
+    z-index: 10;
+}
+
+.selection-info {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    min-height: 26px;
+    color: #24563e;
+}
+
+.next-btn {
+    width: 100%;
+    height: 47px;
+    background: #e9b52b;
+    border: 0;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.next-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.next-btn:not(:disabled):hover {
+    background: #d9a11c;
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+    .booking-top h1 {
+        font-size: 14px;
+        padding: 0 35px;
+    }
+
+    .booking-header {
+        min-height: 145px;
+    }
+
+    .booking-toolbar {
+        align-items: flex-start;
+        flex-direction: column-reverse;
+        gap: 12px;
+    }
+
+    .booking-legend {
+        gap: 10px;
+    }
+
+    .booking-legend span {
+        font-size: 10px;
+    }
+
+    .booking-date {
+        align-self: flex-end;
+    }
+    /* Ô đã đặt */
+.time-cell.booked {
+    background: #f4565d;
+    cursor: not-allowed;
+}
+
+/* Ô chờ đặt cọc hoặc chờ duyệt */
+.time-cell.pending {
+    background: #f5c451;
+    cursor: not-allowed;
+}
+
+/* Ô khóa */
+.time-cell.locked {
+    background: #b3b3b3;
+    cursor: not-allowed;
+}
+
+/* Ô trống */
+.time-cell.free {
+    background: #ffffff;
+    cursor: crosshair;
+}
+
+/* Ô đang chọn */
+.time-cell.selected {
+    background: #35a950 !important;
+}
+}

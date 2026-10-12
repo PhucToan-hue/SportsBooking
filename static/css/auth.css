@@ -1,0 +1,262 @@
+
+:root {
+    --mu-green: #006b35;
+    --mu-green-light: #008744;
+    --mu-dark: #073b2d;
+    --mu-border: #e2e8e5;
+    --mu-muted: #64748b;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    color: var(--mu-dark);
+}
+
+button, input {
+    font: inherit;
+}
+
+.mu-auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+    background:
+        radial-gradient(circle at 10% 15%, #d9f3e4, transparent 35%),
+        radial-gradient(circle at 90% 85%, #e1f5e8, transparent 35%),
+        #f5f9f7;
+}
+
+.mu-auth-card {
+    width: 100%;
+    max-width: 460px;
+    padding: 38px 40px;
+    background: #fff;
+    border: 1px solid #edf2ee;
+    border-radius: 22px;
+    box-shadow: 0 18px 55px rgba(0, 70, 35, .09);
+}
+
+/* Logo */
+.mu-auth-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #071f19;
+    font-size: 29px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.mu-auth-logo b {
+    color: var(--mu-green-light);
+}
+
+.mu-auth-logo-icon {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 2px solid var(--mu-green);
+    border-radius: 50%;
+    color: var(--mu-green);
+    font-size: 22px;
+}
+
+/* Tiêu đề */
+.mu-auth-heading {
+    margin: 28px 0;
+    text-align: center;
+}
+
+.mu-auth-heading h1 {
+    font-size: 23px;
+    font-weight: 700;
+    margin: 0 0 9px;
+}
+
+.mu-auth-heading p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--mu-muted);
+    line-height: 1.7;
+}
+
+/* Form */
+.mu-auth-field {
+    margin-bottom: 19px;
+}
+
+.mu-auth-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 9px;
+}
+
+.mu-auth-input {
+    display: flex;
+    align-items: center;
+    height: 49px;
+    padding: 0 14px;
+    border: 1px solid var(--mu-border);
+    border-radius: 11px;
+    background: #fff;
+    transition: .2s;
+}
+
+.mu-auth-input:focus-within {
+    border-color: var(--mu-green-light);
+    box-shadow: 0 0 0 3px rgba(0, 135, 68, .09);
+}
+
+.mu-auth-input > i {
+    color: #82918a;
+    font-size: 15px;
+    width: 21px;
+}
+
+.mu-auth-input input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    outline: 0;
+    padding: 0 9px;
+    background: transparent;
+    font-size: 13px;
+    color: var(--mu-dark);
+}
+
+.mu-auth-input input::placeholder {
+    color: #a0aaa5;
+}
+
+.mu-toggle-password {
+    border: 0;
+    background: none;
+    cursor: pointer;
+    color: #82918a;
+    padding: 5px;
+}
+
+.mu-toggle-password:hover {
+    color: var(--mu-green);
+}
+
+/* Ghi nhớ và quên mật khẩu */
+.mu-auth-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin: 4px 0 24px;
+}
+
+.mu-remember,
+.mu-auth-agree {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+    color: #52645a;
+    cursor: pointer;
+    line-height: 1.7;
+}
+
+.mu-remember input,
+.mu-auth-agree input {
+    accent-color: var(--mu-green);
+    margin-top: 3px;
+}
+
+.mu-auth-link,
+.mu-auth-agree a {
+    color: var(--mu-green-light);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.mu-auth-agree {
+    margin: 4px 0 22px;
+}
+
+/* Nút */
+.mu-auth-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    height: 49px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--mu-green);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.mu-auth-submit:hover {
+    background: #004d28;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 107, 53, .2);
+}
+
+.mu-auth-bottom {
+    text-align: center;
+    font-size: 13px;
+    margin-top: 25px;
+    color: var(--mu-muted);
+}
+
+.mu-auth-bottom a {
+    color: var(--mu-green-light);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.mu-auth-back {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 28px;
+    color: #7a8981;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.mu-auth-back:hover,
+.mu-auth-bottom a:hover {
+    color: var(--mu-green);
+}
+
+@media (max-width: 480px) {
+    .mu-auth-page {
+        padding: 20px 12px;
+    }
+
+    .mu-auth-card {
+        padding: 30px 22px;
+        border-radius: 17px;
+    }
+
+    .mu-auth-heading h1 {
+        font-size: 21px;
+    }
+
+    .mu-auth-options {
+        flex-wrap: wrap;
+    }
+}
