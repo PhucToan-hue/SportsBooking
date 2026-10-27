@@ -1,0 +1,320 @@
+
+{% extends "owner_dashboard/base_owner.html" %}
+
+{% block content %}
+
+<style>
+.owner-booking-confirm {
+    background: #006b3b;
+    color: #fff;
+    min-height: 85vh;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.owner-booking-confirm * {
+    box-sizing: border-box;
+}
+
+.obc-top {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.obc-back {
+    color: white;
+    font-size: 28px;
+    text-decoration: none;
+}
+
+.obc-title {
+    flex: 1;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.obc-sport {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 22px;
+}
+
+.obc-sport span {
+    color: #ffeb3b;
+}
+
+.obc-field {
+    margin-bottom: 20px;
+}
+
+.obc-field label {
+    display: block;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.obc-field input,
+.obc-field textarea {
+    display: block;
+    width: 100%;
+    background: #fff;
+    color: #222;
+    border: 0;
+    border-radius: 5px;
+    padding: 15px;
+    font-size: 15px;
+}
+
+.obc-field textarea {
+    min-height: 55px;
+    resize: vertical;
+}
+
+.obc-info {
+    background: #005a33;
+    border-radius: 10px;
+    padding: 18px;
+    margin-top: 18px;
+}
+
+.obc-info h3 {
+    color: #ffeb3b;
+    font-size: 17px;
+    margin: 0 0 22px;
+}
+
+.obc-info p {
+    color: white;
+    margin: 12px 0;
+    line-height: 1.7;
+}
+
+.obc-yellow {
+    color: #ffeb3b;
+    font-weight: bold;
+}
+
+.obc-deposit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-top: 15px;
+    color: white;
+}
+
+.obc-deposit input {
+    width: 20px;
+    height: 20px;
+    accent-color: #e9b52c;
+}
+
+.obc-submit {
+    width: 100%;
+    padding: 16px;
+    margin-top: 45px;
+    border: 0;
+    border-radius: 5px;
+    background: #e9b52c;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.obc-submit:hover {
+    background: #d4a221;
+}
+
+.obc-error {
+    background: #ffe0e0;
+    color: #a40000;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.obc-note {
+    font-size: 13px;
+    color: #d9f5e5;
+    margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+    .owner-booking-confirm {
+        padding: 14px;
+    }
+
+    .obc-title {
+        font-size: 18px;
+    }
+}
+</style>
+
+<div class="owner-booking-confirm">
+
+    <div class="obc-top">
+        <a href="{% url 'owner_dashboard:schedule' %}"
+           class="obc-back">‹</a>
+
+        <div class="obc-title">
+            Đặt lịch ngày trực quan
+        </div>
+    </div>
+
+    <div class="obc-sport">
+        ĐỐI TƯỢNG:
+        <span>{{ court.sport_type.name }}</span>
+    </div>
+
+    {% if error %}
+        <div class="obc-error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if booking_data %}
+
+    <form method="post"
+          action="{% url 'owner_dashboard:booking_confirm' %}">
+
+        {% csrf_token %}
+
+        <input type="hidden"
+               name="action"
+               value="create">
+
+        <input type="hidden"
+               name="facility_id"
+               value="{{ facility.id }}">
+
+        <input type="hidden"
+               name="court_id"
+               value="{{ court.id }}">
+
+        <input type="hidden"
+               name="date"
+               value="{{ selected_date|date:'Y-m-d' }}">
+
+        <input type="hidden"
+               name="start"
+               value="{{ start_clock|time:'H:i' }}">
+
+        <input type="hidden"
+               name="end"
+               value="{{ end_clock|time:'H:i' }}">
+
+        <div class="obc-field">
+            <label>TÊN KHÁCH HÀNG</label>
+
+            <input
+                type="text"
+                name="customer_name"
+                value="{{ customer_name }}"
+                placeholder="Nhập tên khách hàng"
+                maxlength="150"
+                required>
+        </div>
+
+        <div class="obc-field">
+            <label>SỐ ĐIỆN THOẠI</label>
+
+            <input
+                type="tel"
+                name="customer_phone"
+                value="{{ customer_phone }}"
+                placeholder="+84 | Nhập số điện thoại"
+                inputmode="numeric"
+                pattern="[0-9]{9,11}"
+                maxlength="11"
+                required>
+        </div>
+
+        <div class="obc-field">
+            <label>GHI CHÚ</label>
+
+            <textarea
+                name="note"
+                placeholder="Nhập ghi chú">{{ note }}</textarea>
+        </div>
+
+        <div class="obc-info">
+
+            <h3>▤ Thông tin lịch đặt</h3>
+
+            <p>
+                Chi nhánh:
+                <strong>{{ facility.name }}</strong>
+            </p>
+
+            <p>
+                <strong>Sân &amp; Thời gian:</strong>
+                <br>
+
+                {{ selected_date|date:'d/m/Y' }}
+                <br>
+
+                - {{ court.name }}:
+                {{ start_clock|time:'H:i' }}
+                -
+                {{ end_clock|time:'H:i' }}
+
+                &nbsp; | &nbsp;
+
+                <span class="obc-yellow">
+                    {{ booking_data.total|floatformat:0 }} đ
+                </span>
+            </p>
+
+            <p>
+                Tổng giờ:
+                <strong>
+                    {{ duration_hours|floatformat:1 }} giờ
+                </strong>
+            </p>
+
+            <p>
+                Tổng tiền:
+                <strong>
+                    {{ booking_data.total|floatformat:0 }} đ
+                </strong>
+            </p>
+
+            <label class="obc-deposit">
+                <input
+                    type="checkbox"
+                    name="paid_deposit"
+                    {% if paid_deposit %}checked{% endif %}>
+
+                <strong>Đặt cọc</strong>
+            </label>
+
+            <div class="obc-note">
+                Tích chọn nếu đã thu đủ 100% tiền sân.
+                Không tích nếu khách chưa thanh toán.
+            </div>
+
+        </div>
+
+        <button type="submit" class="obc-submit">
+            XÁC NHẬN
+        </button>
+
+    </form>
+
+    {% else %}
+
+        <a href="{% url 'owner_dashboard:schedule' %}"
+           style="color:white">
+            ← Quay lại chọn khung giờ khác
+        </a>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

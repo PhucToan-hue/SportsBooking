@@ -1,0 +1,946 @@
+
+{% extends "owner_dashboard/base_owner.html" %}
+
+{% block content %}
+
+<style>
+/* ===== TRANG QUẢN LÝ SÂN ===== */
+.mu-courts {
+    font-family: "Be Vietnam Pro", sans-serif;
+    color: #1e293b;
+    padding-bottom: 35px;
+}
+
+.mu-courts * {
+    box-sizing: border-box;
+}
+
+.mu-courts-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 24px;
+}
+
+.mu-courts-header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0 0 7px;
+}
+
+.mu-courts-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.mu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.mu-btn:hover {
+    opacity: 0.88;
+}
+
+.mu-btn-primary {
+    background: #17683d;
+    color: white;
+}
+
+.mu-btn-blue {
+    background: #2563eb;
+    color: white;
+}
+
+.mu-btn-orange {
+    background: #f59e0b;
+    color: white;
+}
+
+.mu-btn-red {
+    background: #dc2626;
+    color: white;
+}
+
+.mu-btn-gray {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+/* ===== THỐNG KÊ ===== */
+.mu-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.mu-stat {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.mu-stat-label {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 10px;
+}
+
+.mu-stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #17683d;
+}
+
+/* ===== BỘ LỌC ===== */
+.mu-filter {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 17px;
+    margin-bottom: 20px;
+}
+
+.mu-filter form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.mu-input {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    background: white;
+    color: #1e293b;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.mu-input:focus {
+    outline: 2px solid #86efac;
+    border-color: #17683d;
+}
+
+.mu-filter .mu-input {
+    max-width: 260px;
+}
+
+/* ===== DANH SÁCH SÂN ===== */
+.mu-court-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(310px, 1fr)
+    );
+    gap: 18px;
+}
+
+.mu-court-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: 0.2s;
+}
+
+.mu-court-card:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+    transform: translateY(-2px);
+}
+
+.mu-court-top {
+    padding: 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.mu-court-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.mu-court-title h3 {
+    margin: 0 0 7px;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.mu-court-facility {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.mu-badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.mu-badge-active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.mu-badge-inactive {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.mu-badge-maintenance {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.mu-court-details {
+    padding: 16px 20px;
+}
+
+.mu-detail-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+    font-size: 12px;
+}
+
+.mu-detail-row span:first-child {
+    color: #64748b;
+}
+
+.mu-detail-row strong {
+    text-align: right;
+}
+
+.mu-court-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 0 20px 20px;
+}
+
+.mu-court-actions .mu-btn {
+    width: 100%;
+}
+
+.mu-court-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 14px 20px;
+    border-top: 1px solid #f1f5f9;
+    background: #f8fafc;
+}
+
+.mu-court-bottom form {
+    display: inline-flex;
+}
+
+/* ===== POPUP ===== */
+.mu-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15,23,42,0.65);
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+}
+
+.mu-modal.show {
+    display: flex;
+}
+
+.mu-modal-box {
+    width: 100%;
+    max-width: 620px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 16px;
+    padding: 26px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.18);
+}
+
+.mu-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.mu-modal-header h2 {
+    margin: 0;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.mu-close {
+    border: none;
+    background: #f1f5f9;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.mu-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.mu-field {
+    margin-bottom: 16px;
+}
+
+.mu-field.full {
+    grid-column: 1 / -1;
+}
+
+.mu-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+.mu-field textarea {
+    resize: vertical;
+    min-height: 85px;
+}
+
+.mu-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.mu-empty {
+    text-align: center;
+    background: white;
+    border: 1px dashed #cbd5e1;
+    border-radius: 15px;
+    padding: 50px 20px;
+    color: #64748b;
+}
+
+.mu-message {
+    padding: 12px 15px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 9px;
+    margin-bottom: 15px;
+    font-size: 13px;
+}
+
+@media (max-width: 768px) {
+    .mu-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .mu-court-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mu-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mu-field.full {
+        grid-column: auto;
+    }
+
+    .mu-modal-box {
+        padding: 18px;
+    }
+}
+</style>
+
+<div class="mu-courts">
+
+    <!-- TIÊU ĐỀ -->
+    <div class="mu-courts-header">
+        <div>
+            <h1>Quản lý sân</h1>
+            <p>
+                Thêm, chỉnh sửa, thiết lập giá và khóa sân
+                thuộc các cơ sở của bạn.
+            </p>
+        </div>
+
+        <button
+            type="button"
+            class="mu-btn mu-btn-primary"
+            onclick="openAddCourt()"
+        >
+            + Thêm sân mới
+        </button>
+    </div>
+
+    <!-- THÔNG BÁO -->
+    {% for message in messages %}
+        <div class="mu-message">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <!-- THỐNG KÊ -->
+    <div class="mu-stats">
+        <div class="mu-stat">
+            <div class="mu-stat-label">Tổng số sân</div>
+            <div class="mu-stat-value">
+                {{ courts|length }}
+            </div>
+        </div>
+
+        <div class="mu-stat">
+            <div class="mu-stat-label">Sân hoạt động</div>
+            <div class="mu-stat-value" id="active-count">
+                0
+            </div>
+        </div>
+
+        <div class="mu-stat">
+            <div class="mu-stat-label">Sân tạm ngừng / bảo trì</div>
+            <div class="mu-stat-value" id="inactive-count">
+                0
+            </div>
+        </div>
+    </div>
+
+    <!-- BỘ LỌC -->
+    <div class="mu-filter">
+        <form method="get">
+            <select
+                name="facility"
+                class="mu-input"
+            >
+                <option value="">Tất cả cơ sở</option>
+
+                {% for facility in facilities %}
+                    <option
+                        value="{{ facility.id }}"
+                        {% if selected_facility == facility.id|stringformat:"s" %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ facility.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button
+                type="submit"
+                class="mu-btn mu-btn-primary"
+            >
+                Lọc sân
+            </button>
+        </form>
+    </div>
+
+    <!-- DANH SÁCH SÂN -->
+    <div class="mu-court-grid">
+        {% for court in courts %}
+
+        <div
+            class="mu-court-card"
+            data-court-status="{{ court.status }}"
+        >
+            <div class="mu-court-top">
+                <div class="mu-court-title">
+                    <div>
+                        <h3>{{ court.name }}</h3>
+
+                        <div class="mu-court-facility">
+                            {{ court.facility.name }}
+                        </div>
+                    </div>
+
+                    {% if court.status == "ACTIVE" %}
+                        <span class="mu-badge mu-badge-active">
+                            Hoạt động
+                        </span>
+                    {% elif court.status == "MAINTENANCE" %}
+                        <span class="mu-badge mu-badge-maintenance">
+                            Bảo trì
+                        </span>
+                    {% else %}
+                        <span class="mu-badge mu-badge-inactive">
+                            Ngừng hoạt động
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mu-court-details">
+                <div class="mu-detail-row">
+                    <span>Môn thể thao</span>
+                    <strong>
+                        {{ court.sport_type.name }}
+                    </strong>
+                </div>
+
+                <div class="mu-detail-row">
+                    <span>Loại mặt sân</span>
+                    <strong>
+                        {{ court.surface_type|default:"Chưa cập nhật" }}
+                    </strong>
+                </div>
+
+                <div class="mu-detail-row">
+                    <span>Sức chứa</span>
+                    <strong>
+                        {{ court.capacity|default:"Chưa cập nhật" }}
+                    </strong>
+                </div>
+
+                <div class="mu-detail-row">
+                    <span>Trạng thái</span>
+                    <strong>
+                        {{ court.get_status_display }}
+                    </strong>
+                </div>
+            </div>
+
+            <!-- NÚT CHỨC NĂNG -->
+            <div class="mu-court-actions">
+
+                <button
+                    type="button"
+                    class="mu-btn mu-btn-blue"
+                    data-id="{{ court.id }}"
+                    data-name="{{ court.name }}"
+                    data-facility="{{ court.facility_id }}"
+                    data-sport="{{ court.sport_type_id }}"
+                    data-surface="{{ court.surface_type }}"
+                    data-capacity="{{ court.capacity|default_if_none:'' }}"
+                    data-description="{{ court.description }}"
+                    data-status="{{ court.status }}"
+                    onclick="openEditCourt(this)"
+                >
+                    ✎ Sửa sân
+                </button>
+
+                <a
+                    href="{% url 'owner_dashboard:court_price_manage' court.id %}"
+                    class="mu-btn mu-btn-primary"
+                >
+                    Giá tiền
+                </a>
+
+                <a
+                    href="{% url 'owner_dashboard:court_block_manage' court.id %}"
+                    class="mu-btn mu-btn-orange"
+                >
+                    Khóa giờ
+                </a>
+
+                <a
+                    href="{% url 'owner_dashboard:schedule' %}?facility={{ court.facility_id }}"
+                    class="mu-btn mu-btn-gray"
+                >
+                    Xem lịch
+                </a>
+            </div>
+
+            <!-- KHÓA TOÀN SÂN / XÓA -->
+            <div class="mu-court-bottom">
+
+                <form
+                    method="post"
+                    action="{% url 'owner_dashboard:court_status' court.id %}"
+                >
+                    {% csrf_token %}
+
+                    {% if court.status == "ACTIVE" %}
+                        <input
+                            type="hidden"
+                            name="status"
+                            value="INACTIVE"
+                        >
+
+                        <button
+                            type="submit"
+                            class="mu-btn mu-btn-orange"
+                            onclick="return confirm('Bạn muốn ngừng hoạt động sân này?')"
+                        >
+                            Khóa toàn sân
+                        </button>
+                    {% else %}
+                        <input
+                            type="hidden"
+                            name="status"
+                            value="ACTIVE"
+                        >
+
+                        <button
+                            type="submit"
+                            class="mu-btn mu-btn-primary"
+                        >
+                            Mở hoạt động
+                        </button>
+                    {% endif %}
+                </form>
+
+                <form
+                    method="post"
+                    action="{% url 'owner_dashboard:court_delete' court.id %}"
+                    onsubmit="return confirm('Bạn chắc chắn muốn xóa sân này?')"
+                >
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="mu-btn mu-btn-red"
+                    >
+                        Xóa sân
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+        {% empty %}
+
+        <div class="mu-empty">
+            <h3>Chưa có sân nào</h3>
+            <p>
+                Hãy nhấn "Thêm sân mới" để bắt đầu quản lý.
+            </p>
+        </div>
+
+        {% endfor %}
+    </div>
+
+</div>
+
+<!-- POPUP THÊM / SỬA SÂN -->
+<div class="mu-modal" id="court-modal">
+    <div class="mu-modal-box">
+
+        <div class="mu-modal-header">
+            <h2 id="court-modal-title">
+                Thêm sân mới
+            </h2>
+
+            <button
+                type="button"
+                class="mu-close"
+                onclick="closeCourtModal()"
+            >
+                ×
+            </button>
+        </div>
+
+        <form
+            method="post"
+            id="court-form"
+            action="{% url 'owner_dashboard:court_add' %}"
+        >
+            {% csrf_token %}
+
+            <div class="mu-form-grid">
+
+                <div class="mu-field">
+                    <label for="court-facility">
+                        Cơ sở
+                    </label>
+
+                    <select
+                        id="court-facility"
+                        name="facility"
+                        class="mu-input"
+                        required
+                    >
+                        <option value="">
+                            -- Chọn cơ sở --
+                        </option>
+
+                        {% for facility in facilities %}
+                            <option value="{{ facility.id }}">
+                                {{ facility.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mu-field">
+                    <label for="court-sport">
+                        Môn thể thao
+                    </label>
+
+                    <select
+                        id="court-sport"
+                        name="sport_type"
+                        class="mu-input"
+                        required
+                    >
+                        <option value="">
+                            -- Chọn môn thể thao --
+                        </option>
+
+                        {% for sport in sport_types %}
+                            <option value="{{ sport.id }}">
+                                {{ sport.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mu-field">
+                    <label for="court-name">
+                        Tên sân
+                    </label>
+
+                    <input
+                        id="court-name"
+                        type="text"
+                        name="name"
+                        class="mu-input"
+                        placeholder="Ví dụ: Sân Pickleball 1"
+                        maxlength="255"
+                        required
+                    >
+                </div>
+
+                <div class="mu-field">
+                    <label for="court-surface">
+                        Loại mặt sân
+                    </label>
+
+                    <input
+                        id="court-surface"
+                        type="text"
+                        name="surface_type"
+                        class="mu-input"
+                        placeholder="Ví dụ: Acrylic"
+                    >
+                </div>
+
+                <div class="mu-field">
+                    <label for="court-capacity">
+                        Sức chứa
+                    </label>
+
+                    <input
+                        id="court-capacity"
+                        type="number"
+                        name="capacity"
+                        min="1"
+                        class="mu-input"
+                        placeholder="Ví dụ: 4"
+                    >
+                </div>
+
+                <div class="mu-field">
+                    <label for="court-status">
+                        Trạng thái
+                    </label>
+
+                    <select
+                        id="court-status"
+                        name="status"
+                        class="mu-input"
+                    >
+                        <option value="ACTIVE">
+                            Hoạt động
+                        </option>
+
+                        <option value="INACTIVE">
+                            Ngừng hoạt động
+                        </option>
+
+                        <option value="MAINTENANCE">
+                            Bảo trì
+                        </option>
+                    </select>
+                </div>
+
+                <div class="mu-field full">
+                    <label for="court-description">
+                        Mô tả sân
+                    </label>
+
+                    <textarea
+                        id="court-description"
+                        name="description"
+                        class="mu-input"
+                        placeholder="Nhập thông tin mô tả sân..."
+                    ></textarea>
+                </div>
+
+            </div>
+
+            <div class="mu-modal-actions">
+                <button
+                    type="button"
+                    class="mu-btn mu-btn-gray"
+                    onclick="closeCourtModal()"
+                >
+                    Hủy
+                </button>
+
+                <button
+                    type="submit"
+                    class="mu-btn mu-btn-primary"
+                >
+                    Lưu thông tin
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- URL MẪU ĐỂ JS DÙNG KHI SỬA -->
+<div
+    id="court-edit-url-template"
+    data-url="{% url 'owner_dashboard:court_edit' 999999 %}"
+    hidden
+></div>
+
+<script>
+(function () {
+    "use strict";
+
+    const modal = document.getElementById("court-modal");
+    const form = document.getElementById("court-form");
+    const title = document.getElementById(
+        "court-modal-title"
+    );
+
+    const addUrl = form.action;
+
+    const editUrlTemplate = document.getElementById(
+        "court-edit-url-template"
+    ).dataset.url;
+
+    window.openAddCourt = function () {
+        form.reset();
+        form.action = addUrl;
+
+        title.textContent = "Thêm sân mới";
+        modal.classList.add("show");
+
+        document.body.style.overflow = "hidden";
+    };
+
+    window.openEditCourt = function (button) {
+        const data = button.dataset;
+
+        form.reset();
+
+        form.action = editUrlTemplate.replace(
+            "999999",
+            data.id
+        );
+
+        title.textContent = "Chỉnh sửa sân: " + data.name;
+
+        document.getElementById(
+            "court-facility"
+        ).value = data.facility;
+
+        document.getElementById(
+            "court-sport"
+        ).value = data.sport;
+
+        document.getElementById(
+            "court-name"
+        ).value = data.name;
+
+        document.getElementById(
+            "court-surface"
+        ).value = data.surface || "";
+
+        document.getElementById(
+            "court-capacity"
+        ).value = data.capacity || "";
+
+        document.getElementById(
+            "court-description"
+        ).value = data.description || "";
+
+        document.getElementById(
+            "court-status"
+        ).value = data.status;
+
+        modal.classList.add("show");
+        document.body.style.overflow = "hidden";
+    };
+
+    window.closeCourtModal = function () {
+        modal.classList.remove("show");
+        document.body.style.overflow = "";
+    };
+
+    modal.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            closeCourtModal();
+        }
+    });
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+            if (event.key === "Escape") {
+                closeCourtModal();
+            }
+        }
+    );
+
+    // Đếm trạng thái trong danh sách đang hiển thị.
+    const cards = document.querySelectorAll(
+        ".mu-court-card"
+    );
+
+    let activeCount = 0;
+    let inactiveCount = 0;
+
+    cards.forEach(function (card) {
+        if (card.dataset.courtStatus === "ACTIVE") {
+            activeCount++;
+        } else {
+            inactiveCount++;
+        }
+    });
+
+    document.getElementById(
+        "active-count"
+    ).textContent = activeCount;
+
+    document.getElementById(
+        "inactive-count"
+    ).textContent = inactiveCount;
+
+})();
+</script>
+
+{% endblock %}

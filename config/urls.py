@@ -5,23 +5,60 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
+# ==========================================
+# CẤU HÌNH GIAO DIỆN DJANGO ADMIN
+# ==========================================
+
 admin.site.site_header = (
     "HỆ THỐNG QUẢN LÝ VÀ ĐẶT SÂN THỂ THAO"
 )
+
 admin.site.site_title = "Quản lý sân thể thao"
+
 admin.site.index_title = "TRANG QUẢN TRỊ HỆ THỐNG"
 
 
+# ==========================================
+# KHAI BÁO ĐƯỜNG DẪN
+# ==========================================
+
 urlpatterns = [
-    path("admin/", admin.site.urls),
 
-    path("accounts/", include("accounts.urls")),
+    # Admin hệ thống
+    path(
+        "admin/",
+        admin.site.urls
+    ),
 
-    path("payments/", include("payments.urls")),
+    # Đăng nhập, đăng ký, tài khoản
+    path(
+        "accounts/",
+        include("accounts.urls")
+    ),
 
-    path("", include("facilities.urls")),
+    # Thanh toán VietQR
+    path(
+        "payments/",
+        include("payments.urls")
+    ),
+
+    # Dashboard quản lý dành cho chủ sân
+    path(
+        "owner/",
+        include("owner_dashboard.urls")
+    ),
+
+    # Trang chủ, danh sách cơ sở, đặt sân
+    path(
+        "",
+        include("facilities.urls")
+    ),
 ]
 
+
+# ==========================================
+# HIỂN THỊ FILE MEDIA KHI DEBUG
+# ==========================================
 
 if settings.DEBUG:
     urlpatterns += static(

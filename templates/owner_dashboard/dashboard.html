@@ -1,0 +1,820 @@
+
+{% extends "owner_dashboard/base_owner.html" %}
+
+{% block title %}Trung tâm điều hành | MatchUp{% endblock %}
+
+{% block content %}
+
+<style>
+    .mu-owner-dashboard {
+        font-family: "Be Vietnam Pro", Arial, sans-serif;
+        padding-bottom: 95px;
+    }
+
+    .mu-owner-banner {
+        background: linear-gradient(
+            115deg,
+            #075b37,
+            #138c65,
+            #24aa90
+        );
+        border-radius: 18px;
+        padding: 30px;
+        color: white;
+        margin-bottom: 22px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mu-owner-banner::after {
+        content: "";
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        border: 45px solid rgba(255,255,255,0.07);
+        border-radius: 50%;
+        right: -60px;
+        top: -100px;
+        pointer-events: none;
+    }
+
+    .mu-owner-banner h1 {
+        color: white;
+        font-size: 27px;
+        font-weight: 800;
+        margin: 0 0 10px;
+    }
+
+    .mu-owner-banner p {
+        color: rgba(255,255,255,0.9);
+        margin: 0;
+    }
+
+    .mu-owner-banner .welcome-label {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        color: #b9ffda;
+    }
+
+    .mu-owner-dashboard .mu-section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 25px 0 15px;
+    }
+
+    .mu-owner-dashboard .mu-section-heading h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 800;
+        color: #163b2b;
+    }
+
+    .mu-owner-dashboard .mu-section-heading p {
+        margin: 5px 0 0;
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    /* ===== CÁC Ô CHỨC NĂNG ===== */
+
+    .mu-feature-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .mu-feature-card {
+        min-height: 175px;
+        border-radius: 16px;
+        padding: 22px;
+        color: white !important;
+        text-decoration: none !important;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.2s, box-shadow 0.2s;
+        isolation: isolate;
+    }
+
+    .mu-feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.16);
+        color: white !important;
+    }
+
+    .mu-feature-card:focus-visible {
+        outline: 3px solid #14532d;
+        outline-offset: 3px;
+    }
+
+    .mu-feature-card::before {
+        content: "";
+        position: absolute;
+        width: 175px;
+        height: 175px;
+        border: 25px solid rgba(255,255,255,0.09);
+        border-radius: 50%;
+        right: -65px;
+        top: -65px;
+        z-index: -1;
+    }
+
+    .mu-feature-card::after {
+        content: "";
+        position: absolute;
+        width: 90px;
+        height: 90px;
+        background: rgba(255,255,255,0.07);
+        transform: rotate(35deg);
+        right: 20px;
+        bottom: -45px;
+        border-radius: 16px;
+        z-index: -1;
+    }
+
+    .mu-feature-icon {
+        width: 54px;
+        height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 13px;
+        background: rgba(255,255,255,0.17);
+        font-size: 27px;
+    }
+
+    .mu-feature-title {
+        font-size: 17px;
+        font-weight: 800;
+        margin: 0 0 6px;
+        color: white;
+    }
+
+    .mu-feature-desc {
+        font-size: 12px;
+        color: rgba(255,255,255,0.92);
+        margin: 0;
+    }
+
+    .mu-feature-arrow {
+        position: absolute;
+        right: 20px;
+        bottom: 23px;
+        font-size: 16px;
+        opacity: 0.85;
+    }
+
+    .mu-gradient-yellow {
+        background: linear-gradient(125deg, #e5b619, #ee749f);
+    }
+
+    .mu-gradient-purple {
+        background: linear-gradient(125deg, #8e4771, #ff6b70);
+    }
+
+    .mu-gradient-green {
+        background: linear-gradient(125deg, #13bb7d, #589ce5);
+    }
+
+    .mu-gradient-blue {
+        background: linear-gradient(125deg, #08bda7, #6b83d7);
+    }
+
+    .mu-gradient-orange {
+        background: linear-gradient(125deg, #ef9e2d, #f06794);
+    }
+
+    .mu-gradient-pink {
+        background: linear-gradient(125deg, #e45c91, #a86bd8);
+    }
+
+    .mu-gradient-teal {
+        background: linear-gradient(125deg, #10b4b0, #3887ce);
+    }
+
+    .mu-gradient-red {
+        background: linear-gradient(125deg, #df626e, #f58a4d);
+    }
+
+    /* ===== THỐNG KÊ ===== */
+
+    .mu-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .mu-stat-card {
+        background: white;
+        border: 1px solid #e5ebe7;
+        border-radius: 14px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        min-width: 0;
+    }
+
+    .mu-stat-icon {
+        width: 46px;
+        height: 46px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        background: #e8f6ee;
+        color: #12804c;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .mu-stat-info {
+        min-width: 0;
+    }
+
+    .mu-stat-info small {
+        display: block;
+        font-size: 12px;
+        color: #66756d;
+        margin-bottom: 5px;
+    }
+
+    .mu-stat-info strong {
+        display: block;
+        font-size: 24px;
+        color: #173e2c;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .mu-stat-revenue {
+        grid-column: span 2;
+    }
+
+    /* ===== DANH SÁCH ĐƠN ===== */
+
+    .mu-recent-panel {
+        background: white;
+        border: 1px solid #e5ebe7;
+        border-radius: 16px;
+        padding: 22px;
+        margin-top: 20px;
+    }
+
+    .mu-recent-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .mu-recent-header h2 {
+        font-size: 19px;
+        font-weight: 800;
+        margin: 0;
+        color: #173e2c;
+    }
+
+    .mu-view-all {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 14px;
+        border-radius: 9px;
+        background: #e6f6ec;
+        color: #117443;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .mu-view-all:hover {
+        background: #d2eddd;
+        color: #075b37;
+    }
+
+    .mu-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .mu-bookings-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 750px;
+    }
+
+    .mu-bookings-table th {
+        background: #f1f7f3;
+        padding: 13px;
+        text-align: left;
+        color: #365545;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .mu-bookings-table td {
+        padding: 14px 13px;
+        border-bottom: 1px solid #edf0ee;
+        font-size: 13px;
+        color: #374151;
+    }
+
+    .mu-bookings-table tbody tr:hover {
+        background: #f8fcf9;
+    }
+
+    .mu-status {
+        display: inline-block;
+        background: #eaf5ef;
+        color: #17683d;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .mu-empty {
+        padding: 30px !important;
+        text-align: center;
+        color: #7a8680 !important;
+    }
+
+    /* ===== THANH ĐIỀU HƯỚNG DƯỚI ===== */
+
+    .mu-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 200;
+        background: #006b3d;
+        box-shadow: 0 -4px 18px rgba(0,0,0,0.15);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        padding: 10px 12px;
+    }
+
+    .mu-bottom-nav a {
+        color: white;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 5px;
+        border-radius: 8px;
+    }
+
+    .mu-bottom-nav a i {
+        font-size: 22px;
+    }
+
+    .mu-bottom-nav a.active {
+        color: #ffce37;
+    }
+
+    .mu-bottom-nav a:hover {
+        background: rgba(255,255,255,0.1);
+        color: #ffce37;
+    }
+
+    @media (max-width: 1100px) {
+        .mu-feature-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .mu-stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 700px) {
+        .mu-feature-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .mu-feature-card {
+            min-height: 155px;
+            padding: 15px;
+        }
+
+        .mu-feature-title {
+            font-size: 14px;
+        }
+
+        .mu-feature-desc {
+            font-size: 11px;
+        }
+
+        .mu-feature-icon {
+            width: 43px;
+            height: 43px;
+            font-size: 21px;
+        }
+
+        .mu-stats-grid {
+            gap: 10px;
+        }
+
+        .mu-stat-card {
+            padding: 13px;
+            gap: 9px;
+        }
+
+        .mu-stat-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+        }
+
+        .mu-stat-info strong {
+            font-size: 19px;
+        }
+
+        .mu-owner-banner {
+            padding: 22px;
+        }
+
+        .mu-owner-banner h1 {
+            font-size: 21px;
+        }
+
+        .mu-recent-panel {
+            padding: 14px;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .mu-feature-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="mu-owner-dashboard">
+
+    <!-- HEADER -->
+    <section class="mu-owner-banner">
+        <div class="welcome-label">
+            MATCHUP OWNER CENTER
+        </div>
+
+        <h1>
+            <i class="fa-solid fa-building-circle-check"></i>
+            Trung tâm điều hành
+        </h1>
+
+        <p>
+            Xin chào,
+            <strong>{{ request.user.username }}</strong>!
+            Quản lý hoạt động sân thể thao của bạn
+            tại một nơi.
+        </p>
+    </section>
+
+    <!-- DANH SÁCH CHỨC NĂNG -->
+    <div class="mu-section-heading">
+        <div>
+            <h2>Chức năng quản lý</h2>
+            <p>Chọn một chức năng để bắt đầu</p>
+        </div>
+    </div>
+
+    <div class="mu-feature-grid">
+
+        <!-- 1. TRẠNG THÁI SÂN -->
+        <a
+            href="{% url 'owner_dashboard:schedule' %}"
+            class="mu-feature-card mu-gradient-yellow"
+        >
+            <div class="mu-feature-icon">
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+
+            <div>
+                <h3 class="mu-feature-title">
+                    Trạng thái sân
+                </h3>
+                <p class="mu-feature-desc">
+                    Xem sân trống, đã đặt và bị khóa
+                </p>
+            </div>
+
+            <i class="fa-solid fa-arrow-right mu-feature-arrow"></i>
+        </a>
+
+        <!-- 2. DUYỆT ĐƠN -->
+        <a
+            href="{% url 'owner_dashboard:booking_approvals' %}"
+            class="mu-feature-card mu-gradient-purple"
+        >
+            <div class="mu-feature-icon">
+                <i class="fa-solid fa-clipboard-check"></i>
+            </div>
+
+            <div>
+                <h3 class="mu-feature-title">
+                    Duyệt đơn
+                </h3>
+                <p class="mu-feature-desc">
+                    Kiểm tra và xác nhận đơn đặt sân
+                </p>
+            </div>
+
+            <i class="fa-solid fa-arrow-right mu-feature-arrow"></i>
+        </a>
+
+        <!-- 3. QUẢN LÝ CƠ SỞ -->
+        <a
+            href="{% url 'owner_dashboard:facility_list' %}"
+            class="mu-feature-card mu-gradient-green"
+        >
+            <div class="mu-feature-icon">
+                <i class="fa-solid fa-building"></i>
+            </div>
+
+            <div>
+                <h3 class="mu-feature-title">
+                    Quản lý cơ sở
+                </h3>
+                <p class="mu-feature-desc">
+                    Thông tin các cơ sở thể thao
+                </p>
+            </div>
+
+            <i class="fa-solid fa-arrow-right mu-feature-arrow"></i>
+        </a>
+
+        <!-- 4. QUẢN LÝ SÂN -->
+        <a
+            href="{% url 'owner_dashboard:court_list' %}"
+            class="mu-feature-card mu-gradient-blue"
+        >
+            <div class="mu-feature-icon">
+                <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+            </div>
+
+            <div>
+                <h3 class="mu-feature-title">
+                    Quản lý sân
+                </h3>
+                <p class="mu-feature-desc">
+                    Danh sách sân Pickleball và Bóng đá
+                </p>
+            </div>
+
+            <i class="fa-solid fa-arrow-right mu-feature-arrow"></i>
+        </a>
+
+        <!-- 5. QUẢN LÝ ĐƠN ĐẶT -->
+        <a
+            href="{% url 'owner_dashboard:booking_list' %}"
+            class="mu-feature-card mu-gradient-orange"
+        >
+            <div class="mu-feature-icon">
+                <i class="fa-solid fa-list-check"></i>
+            </div>
+
+            <div>
+                <h3 class="mu-feature-title">
+                    Quản lý đơn đặt
+                </h3>
+                <p class="mu-feature-desc">
+                    Xem lịch sử và trạng thái đơn
+                </p>
+            </div>
+
+            <i class="fa-solid fa-arrow-right mu-feature-arrow"></i>
+        </a>
+
+
+        <!-- 7. THỐNG KÊ DOANH THU -->
+        <a
+            href="#mu-revenue"
+            class="mu-feature-card mu-gradient-teal"
+        >
+            <div class="mu-feature-icon">
+                <i class="fa-solid fa-chart-column"></i>
+            </div>
+
+            <div>
+                <h3 class="mu-feature-title">
+                    Doanh thu
+                </h3>
+                <p class="mu-feature-desc">
+                    Theo dõi giá trị đơn đã xác nhận
+                </p>
+            </div>
+
+            <i class="fa-solid fa-arrow-right mu-feature-arrow"></i>
+        </a>
+
+        <!-- 8. ĐƠN GẦN ĐÂY -->
+        <a
+            href="#mu-recent-bookings"
+            class="mu-feature-card mu-gradient-red"
+        >
+            <div class="mu-feature-icon">
+                <i class="fa-solid fa-receipt"></i>
+            </div>
+
+            <div>
+                <h3 class="mu-feature-title">
+                    Đơn gần đây
+                </h3>
+                <p class="mu-feature-desc">
+                    Xem các đơn đặt sân mới nhất
+                </p>
+            </div>
+
+            <i class="fa-solid fa-arrow-right mu-feature-arrow"></i>
+        </a>
+
+    </div>
+
+    <!-- THỐNG KÊ -->
+    <div class="mu-section-heading" id="mu-revenue">
+        <div>
+            <h2>Thống kê hoạt động</h2>
+            <p>Dữ liệu từ các cơ sở thuộc tài khoản của bạn</p>
+        </div>
+    </div>
+
+    <div class="mu-stats-grid">
+
+        <div class="mu-stat-card">
+            <div class="mu-stat-icon">
+                <i class="fa-solid fa-building"></i>
+            </div>
+            <div class="mu-stat-info">
+                <small>Cơ sở thể thao</small>
+                <strong>{{ total_facilities }}</strong>
+            </div>
+        </div>
+
+        <div class="mu-stat-card">
+            <div class="mu-stat-icon">
+                <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+            </div>
+            <div class="mu-stat-info">
+                <small>Tổng số sân</small>
+                <strong>{{ total_courts }}</strong>
+            </div>
+        </div>
+
+        <div class="mu-stat-card">
+            <div class="mu-stat-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="mu-stat-info">
+                <small>Sân hoạt động</small>
+                <strong>{{ active_courts }}</strong>
+            </div>
+        </div>
+
+        <div class="mu-stat-card">
+            <div class="mu-stat-icon">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div class="mu-stat-info">
+                <small>Tổng đơn đặt</small>
+                <strong>{{ total_bookings }}</strong>
+            </div>
+        </div>
+
+        <div class="mu-stat-card">
+            <div class="mu-stat-icon">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="mu-stat-info">
+                <small>Đơn chờ duyệt</small>
+                <strong>{{ pending_bookings }}</strong>
+            </div>
+        </div>
+
+        <div class="mu-stat-card">
+            <div class="mu-stat-icon">
+                <i class="fa-solid fa-calendar-day"></i>
+            </div>
+            <div class="mu-stat-info">
+                <small>Đơn có giờ chơi hôm nay</small>
+                <strong>{{ today_bookings }}</strong>
+            </div>
+        </div>
+
+        <div class="mu-stat-card">
+            <div class="mu-stat-icon">
+                <i class="fa-solid fa-check-double"></i>
+            </div>
+            <div class="mu-stat-info">
+                <small>Đơn đã xác nhận / hoàn thành</small>
+                <strong>{{ confirmed_bookings }}</strong>
+            </div>
+        </div>
+
+        <div class="mu-stat-card mu-stat-revenue">
+            <div class="mu-stat-icon">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="mu-stat-info">
+                <small>Giá trị đơn đã xác nhận</small>
+                <strong>
+                    {{ total_revenue|floatformat:0 }} đ
+                </strong>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ĐƠN ĐẶT GẦN ĐÂY -->
+    <section
+        class="mu-recent-panel"
+        id="mu-recent-bookings"
+    >
+        <div class="mu-recent-header">
+            <h2>
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Đơn đặt sân gần đây
+            </h2>
+
+            <a
+                href="{% url 'owner_dashboard:booking_list' %}"
+                class="mu-view-all"
+            >
+                Xem tất cả
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="mu-table-wrap">
+            <table class="mu-bookings-table">
+                <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Khách hàng</th>
+                        <th>Cơ sở / sân</th>
+                        <th>Thời gian</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for booking in recent_bookings %}
+                    <tr>
+                        <td>
+                            <strong>
+                                {{ booking.booking_code }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ booking.customer.username }}
+                        </td>
+
+                        <td>
+                            {{ booking.court.facility.name }}
+                            /
+                            {{ booking.court.name }}
+                        </td>
+
+                        <td>
+                            {{ booking.start_time|date:"d/m/Y H:i" }}
+                        </td>
+
+                        <td>
+                            <span class="mu-status">
+                                {{ booking.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="mu-empty">
+                            Chưa có đơn đặt sân.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

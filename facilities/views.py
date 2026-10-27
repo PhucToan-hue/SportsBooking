@@ -24,37 +24,8 @@ OCCUPIED_STATUSES = [
 
 
 def home(request):
-    keyword = request.GET.get("q", "").strip()
-    sport = request.GET.get("sport", "").strip().lower()
-
-    facilities = Facility.objects.filter(
-        status=Facility.Status.APPROVED
-    )
-
-    if keyword:
-        facilities = facilities.filter(
-            Q(name__icontains=keyword)
-            | Q(address__icontains=keyword)
-            | Q(city__icontains=keyword)
-        )
-
-    if sport:
-        facilities = facilities.filter(
-            courts__sport_type__slug=sport,
-            courts__status=Court.Status.ACTIVE
-        )
-
-    facilities = facilities.distinct().order_by("-id")
-
-    return render(
-        request,
-        "facilities/home.html",
-        {
-            "facilities": facilities,
-            "keyword": keyword,
-            "sport": sport,
-        }
-    )
+    from .home_search import home_search
+    return home_search(request)
 
 
 def facility_detail(request, pk):

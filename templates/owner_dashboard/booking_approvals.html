@@ -1,0 +1,624 @@
+
+{% extends "owner_dashboard/base_owner.html" %}
+
+{% block title %}Duyệt đơn online | MatchUp{% endblock %}
+
+{% block content %}
+
+<style>
+.ap-page {
+    min-height: 85vh;
+    background: #f0f7f2;
+    padding: 22px;
+    border-radius: 14px;
+    color: #23372c;
+}
+.ap-page * { box-sizing: border-box; }
+
+.ap-header {
+    background: linear-gradient(125deg, #075c36, #159669);
+    padding: 25px;
+    border-radius: 14px;
+    color: white;
+    margin-bottom: 20px;
+}
+.ap-header h1 {
+    font-size: 25px;
+    font-weight: 800;
+    margin: 0 0 8px;
+    color: white;
+}
+.ap-header p { margin: 0; color: #e4f8ed; }
+
+.ap-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.ap-stat {
+    background: white;
+    padding: 17px;
+    border-radius: 12px;
+    border: 1px solid #e1eae3;
+}
+.ap-stat span {
+    display: block;
+    font-size: 13px;
+    color: #65766a;
+}
+.ap-stat strong {
+    display: block;
+    font-size: 26px;
+    color: #17683d;
+    margin-top: 5px;
+}
+
+.ap-filters {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+.ap-filter {
+    text-decoration: none;
+    padding: 10px 13px;
+    border-radius: 9px;
+    background: white;
+    border: 1px solid #d9e6dd;
+    color: #17683d;
+    font-weight: 700;
+    font-size: 13px;
+}
+.ap-filter.active,
+.ap-filter:hover {
+    background: #17683d;
+    color: white;
+}
+.ap-filter small {
+    margin-left: 5px;
+    opacity: .8;
+}
+
+.ap-list { display: grid; gap: 18px; }
+
+.ap-card {
+    background: white;
+    padding: 22px;
+    border: 1px solid #e0e9e2;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px #00000009;
+}
+.ap-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 1px solid #e9efea;
+    padding-bottom: 15px;
+    margin-bottom: 16px;
+}
+.ap-code {
+    color: #17683d;
+    font-size: 17px;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+.ap-date { color: #748278; font-size: 12px; }
+
+.ap-status {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #fff1d6;
+    color: #956100;
+    font-weight: 700;
+    font-size: 12px;
+}
+.ap-status.CONFIRMED,
+.ap-status.COMPLETED {
+    background: #dcfce7;
+    color: #166534;
+}
+.ap-status.REJECTED,
+.ap-status.CANCELLED,
+.ap-status.EXPIRED {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.ap-info {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+.ap-info small {
+    display: block;
+    color: #718075;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+.ap-info strong {
+    display: block;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+.ap-price {
+    color: #12824b;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.ap-notice {
+    margin-top: 17px;
+    padding: 13px 15px;
+    border-radius: 9px;
+    background: #fff5dc;
+    color: #805700;
+    font-size: 13px;
+    line-height: 1.7;
+}
+.ap-notice.success {
+    background: #e0f6e8;
+    color: #17683d;
+}
+.ap-notice.danger {
+    background: #ffeded;
+    color: #9d2828;
+}
+
+.ap-payments {
+    margin-top: 18px;
+    padding: 15px;
+    border-radius: 11px;
+    background: #f4f9f5;
+}
+.ap-payments h3 {
+    color: #17683d;
+    font-size: 16px;
+    margin: 0 0 13px;
+}
+.ap-payment {
+    background: white;
+    border: 1px solid #e1eae3;
+    border-radius: 9px;
+    padding: 13px;
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+.ap-payment p {
+    margin: 6px 0;
+    line-height: 1.6;
+}
+.ap-proof {
+    color: #087647;
+    display: inline-block;
+    margin: 7px 10px 5px 0;
+    font-weight: 700;
+}
+
+.ap-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 17px;
+}
+.ap-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+}
+.ap-btn.approve { background: #15803d; color: white; }
+.ap-btn.verify { background: #f4bc32; color: #342600; }
+.ap-btn.reject { background: #dc3545; color: white; }
+.ap-btn:hover { filter: brightness(.94); }
+
+.ap-reject {
+    border-top: 1px solid #e9efea;
+    padding-top: 14px;
+    margin-top: 16px;
+}
+.ap-reject summary {
+    cursor: pointer;
+    color: #b91c1c;
+    font-weight: 700;
+    font-size: 14px;
+}
+.ap-reject textarea {
+    display: block;
+    width: 100%;
+    min-height: 75px;
+    margin: 12px 0;
+    padding: 12px;
+    border: 1px solid #cfdcd2;
+    border-radius: 8px;
+    resize: vertical;
+}
+.ap-empty {
+    padding: 45px 20px;
+    text-align: center;
+    border-radius: 14px;
+    background: white;
+    color: #69796e;
+}
+.ap-muted {
+    font-size: 12px;
+    color: #718075;
+    line-height: 1.6;
+}
+@media (max-width: 650px) {
+    .ap-page { padding: 12px; }
+    .ap-header h1 { font-size: 20px; }
+    .ap-stats { grid-template-columns: 1fr 1fr; }
+    .ap-info { grid-template-columns: 1fr; }
+    .ap-card { padding: 15px; }
+    .ap-btn { width: 100%; }
+}
+</style>
+
+<div class="ap-page">
+
+    <div class="ap-header">
+        <h1>
+            <i class="fa-solid fa-list-check"></i>
+            DUYỆT ĐƠN ONLINE
+        </h1>
+        <p>
+            Quản lý trạng thái, duyệt đơn và xác minh
+            thanh toán của khách hàng.
+        </p>
+    </div>
+
+    <div class="ap-stats">
+        <div class="ap-stat">
+            <span>Tổng đơn online</span>
+            <strong>{{ total_count }}</strong>
+        </div>
+
+        <div class="ap-stat">
+            <span>Đang chờ xử lý</span>
+            <strong>{{ pending_count }}</strong>
+        </div>
+
+        <div class="ap-stat">
+            <span>Đang hiển thị</span>
+            <strong>{{ bookings|length }}</strong>
+        </div>
+    </div>
+
+    <div class="ap-filters">
+        {% for filter in filters %}
+            <a
+                href="?status={{ filter.value }}"
+                class="ap-filter {% if selected_status == filter.value %}active{% endif %}"
+            >
+                {{ filter.label }}
+                <small>({{ filter.count }})</small>
+            </a>
+        {% endfor %}
+    </div>
+
+    <div class="ap-list">
+
+        {% for booking in bookings %}
+
+        <div class="ap-card">
+
+            <div class="ap-card-head">
+                <div>
+                    <div class="ap-code">
+                        {{ booking.booking_code }}
+                    </div>
+                    <div class="ap-date">
+                        Ngày tạo:
+                        {{ booking.created_at|date:"d/m/Y H:i" }}
+                    </div>
+                </div>
+
+                <span class="ap-status {{ booking.status }}">
+                    {{ booking.get_status_display }}
+                </span>
+            </div>
+
+            <div class="ap-info">
+
+                <div>
+                    <small>Khách hàng</small>
+                    <strong>
+                        {{ booking.customer.full_name|default:booking.customer.username }}
+                    </strong>
+                </div>
+
+                <div>
+                    <small>Số điện thoại</small>
+                    <strong>
+                        {{ booking.customer.phone|default:"Chưa cập nhật" }}
+                    </strong>
+                </div>
+
+                <div>
+                    <small>Cơ sở</small>
+                    <strong>{{ booking.court.facility.name }}</strong>
+                </div>
+
+                <div>
+                    <small>Sân</small>
+                    <strong>{{ booking.court.name }}</strong>
+                </div>
+
+                <div>
+                    <small>Ngày và giờ đặt</small>
+                    <strong>
+                        {{ booking.start_time|date:"d/m/Y H:i" }}
+                        -
+                        {{ booking.end_time|date:"H:i" }}
+                    </strong>
+                </div>
+
+                <div>
+                    <small>Tổng tiền</small>
+                    <span class="ap-price">
+                        {{ booking.total_amount|floatformat:0 }} đ
+                    </span>
+                </div>
+
+                <div>
+                    <small>Tiền cọc yêu cầu</small>
+                    <strong>
+                        {{ booking.deposit_amount|floatformat:0 }} đ
+                    </strong>
+                </div>
+
+                <div>
+                    <small>Tiền cọc đã xác minh</small>
+                    <strong>
+                        {{ booking.verified_deposit_total|floatformat:0 }} đ
+                    </strong>
+                </div>
+
+            </div>
+
+            {% if booking.payment_complete %}
+                <div class="ap-notice success">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Đã xác minh đủ tiền cọc.
+                </div>
+            {% else %}
+                <div class="ap-notice">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Chưa xác minh đủ tiền cọc.
+                    Theo phương án B, chủ sân vẫn có thể duyệt
+                    đơn đang chờ xử lý. Duyệt đơn không đồng
+                    nghĩa đã nhận tiền.
+                </div>
+            {% endif %}
+
+            {% if booking.status == 'CONFIRMED' %}
+                <div class="ap-notice success">
+                    Đơn đã được chủ sân duyệt.
+                    {% if booking.approved_at %}
+                        Thời điểm:
+                        {{ booking.approved_at|date:"d/m/Y H:i" }}.
+                    {% endif %}
+                    {% if not booking.payment_complete %}
+                        Vẫn cần tiếp tục xác minh thanh toán.
+                    {% endif %}
+                </div>
+            {% elif booking.status == 'COMPLETED' %}
+                <div class="ap-notice success">
+                    Đơn đã hoàn thành.
+                </div>
+            {% elif booking.status == 'REJECTED' %}
+                <div class="ap-notice danger">
+                    Đơn đã bị chủ sân từ chối.
+                </div>
+            {% elif booking.status == 'CANCELLED' %}
+                <div class="ap-notice danger">
+                    Đơn đã hủy.
+                </div>
+            {% elif booking.status == 'EXPIRED' %}
+                <div class="ap-notice danger">
+                    Đơn đã hết hạn.
+                </div>
+            {% endif %}
+
+            <div class="ap-payments">
+                <h3>
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                    Thông tin thanh toán
+                </h3>
+
+                {% for payment in booking.approval_payments %}
+
+                <div class="ap-payment">
+                    <p>
+                        <strong>Loại:</strong>
+                        {{ payment.get_payment_type_display }}
+                    </p>
+                    <p>
+                        <strong>Phương thức:</strong>
+                        {{ payment.get_payment_method_display }}
+                    </p>
+                    <p>
+                        <strong>Số tiền:</strong>
+                        {{ payment.amount|floatformat:0 }} đ
+                    </p>
+                    <p>
+                        <strong>Trạng thái:</strong>
+                        {{ payment.get_status_display }}
+                    </p>
+
+                    {% if payment.transaction_code %}
+                        <p>
+                            <strong>Mã giao dịch:</strong>
+                            {{ payment.transaction_code }}
+                        </p>
+                    {% endif %}
+
+                    {% for proof in payment.proofs.all %}
+                        {% if proof.transfer_reference %}
+                            <p>
+                                <strong>Mã tham chiếu:</strong>
+                                {{ proof.transfer_reference }}
+                            </p>
+                        {% endif %}
+
+                        {% if proof.image %}
+                            <a
+                                class="ap-proof"
+                                href="{{ proof.image.url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <i class="fa-solid fa-image"></i>
+                                Xem ảnh chuyển khoản
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if booking.can_verify and payment.payment_type == 'DEPOSIT' and payment.payment_method == 'BANK_TRANSFER' and payment.status == 'PENDING' %}
+
+                        <form
+                            method="post"
+                            action="{% url 'owner_dashboard:booking_approval_action' booking.id %}"
+                            onsubmit="return confirm('Bạn đã kiểm tra ngân hàng và chắc chắn nhận được tiền?');"
+                        >
+                            {% csrf_token %}
+
+                            <input
+                                type="hidden"
+                                name="action"
+                                value="verify"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="payment_id"
+                                value="{{ payment.id }}"
+                            >
+
+                            <button
+                                type="submit"
+                                class="ap-btn verify"
+                            >
+                                <i class="fa-solid fa-check"></i>
+                                XÁC NHẬN ĐÃ NHẬN TIỀN
+                            </button>
+                        </form>
+
+                    {% endif %}
+                </div>
+
+                {% empty %}
+                    <p class="ap-muted">
+                        Đơn chưa có giao dịch thanh toán.
+                    </p>
+                {% endfor %}
+
+                <p class="ap-muted">
+                    Chỉ xác minh khi đã kiểm tra giao dịch
+                    trên tài khoản ngân hàng thực tế.
+                </p>
+            </div>
+
+            {% if booking.can_approve %}
+
+                <div class="ap-actions">
+                    <form
+                        method="post"
+                        action="{% url 'owner_dashboard:booking_approval_action' booking.id %}"
+                        onsubmit="return confirm('Duyệt đơn này? Nếu chưa nhận tiền, đơn vẫn được giữ chỗ nhưng thanh toán chưa được xác minh.');"
+                    >
+                        {% csrf_token %}
+
+                        <input
+                            type="hidden"
+                            name="action"
+                            value="approve"
+                        >
+
+                        <button
+                            type="submit"
+                            class="ap-btn approve"
+                        >
+                            <i class="fa-solid fa-circle-check"></i>
+                            DUYỆT ĐƠN
+                        </button>
+                    </form>
+                </div>
+
+            {% endif %}
+
+            {% if booking.can_reject %}
+
+                <details class="ap-reject">
+                    <summary>
+                        <i class="fa-solid fa-ban"></i>
+                        Từ chối đơn này
+                    </summary>
+
+                    <form
+                        method="post"
+                        action="{% url 'owner_dashboard:booking_approval_action' booking.id %}"
+                        onsubmit="return confirm('Bạn chắc chắn muốn từ chối đơn này?');"
+                    >
+                        {% csrf_token %}
+
+                        <input
+                            type="hidden"
+                            name="action"
+                            value="reject"
+                        >
+
+                        <textarea
+                            name="reason"
+                            maxlength="2000"
+                            placeholder="Nhập lý do từ chối..."
+                            required
+                        ></textarea>
+
+                        <button
+                            type="submit"
+                            class="ap-btn reject"
+                        >
+                            XÁC NHẬN TỪ CHỐI
+                        </button>
+                    </form>
+                </details>
+
+            {% endif %}
+
+            {% if booking.cancel_reason %}
+                <div class="ap-notice danger">
+                    <strong>Lý do:</strong>
+                    {{ booking.cancel_reason }}
+                </div>
+            {% endif %}
+
+        </div>
+
+        {% empty %}
+
+            <div class="ap-empty">
+                <i
+                    class="fa-solid fa-inbox"
+                    style="font-size:38px"
+                ></i>
+                <h3>Không có đơn đặt sân</h3>
+                <p>
+                    Chưa có đơn phù hợp với trạng thái
+                    bạn đang chọn.
+                </p>
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

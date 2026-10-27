@@ -1,0 +1,39 @@
+
+{% extends "owner_dashboard/base_owner.html" %}
+{% block title %}Cơ sở thể thao | MatchUp{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Cơ sở thể thao</h1>
+        <p>Danh sách cơ sở thuộc tài khoản chủ sân của bạn.</p>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Tên cơ sở</th>
+                    <th>Địa chỉ</th>
+                    <th>Điện thoại</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for facility in facilities %}
+                <tr>
+                    <td><strong>{{ facility.name }}</strong></td>
+                    <td>{{ facility.address }}, {{ facility.city }}</td>
+                    <td>{{ facility.phone|default:"—" }}</td>
+                    <td><span class="status">{{ facility.get_status_display }}</span></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="empty">Chưa có cơ sở thể thao.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

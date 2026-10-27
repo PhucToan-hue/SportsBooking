@@ -1,0 +1,67 @@
+
+{% extends "owner_dashboard/base_owner.html" %}
+{% block title %}Đơn đặt sân | MatchUp{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Đơn đặt sân</h1>
+        <p>Theo dõi đơn của khách hàng tại các cơ sở bạn quản lý.</p>
+    </div>
+</div>
+
+<form class="toolbar" method="get">
+    <div class="field">
+        <label>Trạng thái đơn</label>
+        <select name="status">
+            <option value="">Tất cả trạng thái</option>
+            {% for value, label in statuses %}
+            <option value="{{ value }}"
+                {% if selected_status == value %}selected{% endif %}>
+                {{ label }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Lọc đơn</button>
+    <a class="btn" href="{% url 'owner_dashboard:booking_list' %}">Đặt lại</a>
+</form>
+
+<div class="panel">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Sân</th>
+                    <th>Thời gian chơi</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td><strong>{{ booking.booking_code }}</strong></td>
+                    <td>{{ booking.customer.username }}</td>
+                    <td>
+                        {{ booking.court.facility.name }}
+                        / {{ booking.court.name }}
+                    </td>
+                    <td>
+                        {{ booking.start_time|date:"d/m/Y H:i" }}
+                        –
+                        {{ booking.end_time|date:"H:i" }}
+                    </td>
+                    <td>{{ booking.total_amount|floatformat:0 }} đ</td>
+                    <td><span class="status">{{ booking.get_status_display }}</span></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="empty">Chưa có đơn đặt sân.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

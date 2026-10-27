@@ -4,10 +4,12 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Đăng ký | MatchUp</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
           rel="stylesheet">
@@ -15,15 +17,14 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    <link rel="stylesheet"
-          href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 </head>
 
 <body>
 <div class="mu-auth-page">
-
     <div class="mu-auth-card">
 
+        <!-- Logo -->
         <a href="/" class="mu-auth-logo">
             <span class="mu-auth-logo-icon">
                 <i class="fa-solid fa-trophy"></i>
@@ -31,78 +32,196 @@
             <span>Match<b>Up</b></span>
         </a>
 
+        <!-- Tiêu đề -->
         <div class="mu-auth-heading">
             <h1>Tạo tài khoản mới</h1>
             <p>Tham gia MatchUp để đặt sân nhanh chóng</p>
         </div>
 
-        <form action="" method="post">
+        <!-- Form đăng ký -->
+        <form id="registerForm"
+              method="post"
+              action="{% url 'register' %}">
+
             {% csrf_token %}
 
+            <!-- Hiển thị lỗi từ Django -->
+            {% if form.errors %}
+                <div class="mu-auth-error" role="alert">
+
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <p>
+                                <strong>{{ field.label }}:</strong>
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    {% endfor %}
+
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+
+                </div>
+            {% endif %}
+
+            <!-- Tên đăng nhập -->
             <div class="mu-auth-field">
-                <label for="fullname">Họ và tên</label>
+                <label for="username">
+                    Tên đăng nhập
+                </label>
+
                 <div class="mu-auth-input">
                     <i class="fa-regular fa-user"></i>
-                    <input type="text"
-                           id="fullname"
-                           name="fullname"
-                           placeholder="Nhập họ và tên"
-                           autocomplete="name"
-                           required>
+
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        value="{{ form.username.value|default_if_none:'' }}"
+                        placeholder="Nhập tên đăng nhập"
+                        autocomplete="username"
+                        maxlength="150"
+                        required
+                    >
                 </div>
             </div>
 
+            <!-- Họ và tên -->
             <div class="mu-auth-field">
-                <label for="email">Email</label>
+                <label for="full_name">
+                    Họ và tên
+                </label>
+
+                <div class="mu-auth-input">
+                    <i class="fa-regular fa-id-card"></i>
+
+                    <input
+                        type="text"
+                        id="full_name"
+                        name="full_name"
+                        value="{{ form.full_name.value|default_if_none:'' }}"
+                        placeholder="Nhập họ và tên"
+                        autocomplete="name"
+                        maxlength="150"
+                        required
+                    >
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="mu-auth-field">
+                <label for="email">
+                    Email
+                </label>
+
                 <div class="mu-auth-input">
                     <i class="fa-regular fa-envelope"></i>
-                    <input type="email"
-                           id="email"
-                           name="email"
-                           placeholder="example@gmail.com"
-                           autocomplete="email"
-                           required>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value="{{ form.email.value|default_if_none:'' }}"
+                        placeholder="example@gmail.com"
+                        autocomplete="email"
+                        required
+                    >
                 </div>
             </div>
 
+            <!-- Số điện thoại -->
             <div class="mu-auth-field">
-                <label for="password">Mật khẩu</label>
+                <label for="phone">
+                    Số điện thoại
+                </label>
+
+                <div class="mu-auth-input">
+                    <i class="fa-solid fa-phone"></i>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value="{{ form.phone.value|default_if_none:'' }}"
+                        placeholder="Ví dụ: 0912345678"
+                        autocomplete="tel"
+                        inputmode="numeric"
+                        maxlength="10"
+                        required
+                    >
+                </div>
+            </div>
+
+            <!-- Mật khẩu -->
+            <div class="mu-auth-field">
+                <label for="password">
+                    Mật khẩu
+                </label>
+
                 <div class="mu-auth-input">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password"
-                           id="password"
-                           name="password"
-                           placeholder="Tối thiểu 8 ký tự"
-                           minlength="8"
-                           autocomplete="new-password"
-                           required>
-                    <button type="button"
-                            class="mu-toggle-password"
-                            aria-label="Hiện mật khẩu"
-                            onclick="togglePassword('password', this)">
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password1"
+                        placeholder="Tối thiểu 8 ký tự"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="mu-toggle-password"
+                        aria-label="Hiện mật khẩu"
+                        onclick="togglePassword('password', this)"
+                    >
                         <i class="fa-regular fa-eye"></i>
                     </button>
                 </div>
             </div>
 
+            <!-- Xác nhận mật khẩu -->
             <div class="mu-auth-field">
                 <label for="confirm_password">
                     Xác nhận mật khẩu
                 </label>
+
                 <div class="mu-auth-input">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password"
-                           id="confirm_password"
-                           name="confirm_password"
-                           placeholder="Nhập lại mật khẩu"
-                           minlength="8"
-                           autocomplete="new-password"
-                           required>
+
+                    <input
+                        type="password"
+                        id="confirm_password"
+                        name="password2"
+                        placeholder="Nhập lại mật khẩu"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="mu-toggle-password"
+                        aria-label="Hiện mật khẩu"
+                        onclick="togglePassword('confirm_password', this)"
+                    >
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
                 </div>
             </div>
 
+            <!-- Điều khoản -->
             <label class="mu-auth-agree">
-                <input type="checkbox" required>
+                <input
+                    type="checkbox"
+                    id="agree"
+                    name="agree"
+                    required
+                >
+
                 <span>
                     Tôi đồng ý với
                     <a href="#">Điều khoản sử dụng</a>
@@ -111,17 +230,23 @@
                 </span>
             </label>
 
+            <!-- Nút đăng ký -->
             <button type="submit" class="mu-auth-submit">
                 Tạo tài khoản
                 <i class="fa-solid fa-arrow-right"></i>
             </button>
+
         </form>
 
+        <!-- Chuyển sang đăng nhập -->
         <div class="mu-auth-bottom">
             Đã có tài khoản?
-            <a href="/accounts/login/">Đăng nhập</a>
+            <a href="{% url 'login' %}">
+                Đăng nhập
+            </a>
         </div>
 
+        <!-- Quay lại trang chủ -->
         <a href="/" class="mu-auth-back">
             <i class="fa-solid fa-arrow-left"></i>
             Quay về trang chủ
@@ -136,6 +261,7 @@ function togglePassword(id, button) {
     const icon = button.querySelector("i");
 
     const isHidden = input.type === "password";
+
     input.type = isHidden ? "text" : "password";
 
     icon.className = isHidden
@@ -148,21 +274,29 @@ function togglePassword(id, button) {
     );
 }
 
-document.querySelector("form").addEventListener("submit", function(e) {
-    const password = document.getElementById("password");
-    const confirm = document.getElementById("confirm_password");
+// Kiểm tra mật khẩu trùng khớp
+const registerForm = document.getElementById("registerForm");
+const password = document.getElementById("password");
+const confirmPassword = document.getElementById("confirm_password");
 
-    if (password.value !== confirm.value) {
-        e.preventDefault();
-        confirm.setCustomValidity("Mật khẩu xác nhận không khớp");
-        confirm.reportValidity();
+registerForm.addEventListener("submit", function(event) {
+    confirmPassword.setCustomValidity("");
+
+    if (password.value !== confirmPassword.value) {
+        event.preventDefault();
+
+        confirmPassword.setCustomValidity(
+            "Mật khẩu xác nhận không khớp!"
+        );
+
+        confirmPassword.reportValidity();
     }
 });
 
-document.getElementById("confirm_password")
-    .addEventListener("input", function() {
-        this.setCustomValidity("");
-    });
+confirmPassword.addEventListener("input", function() {
+    this.setCustomValidity("");
+});
 </script>
+
 </body>
 </html>

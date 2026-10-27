@@ -48,3 +48,18 @@ class OwnerProfile(models.Model):
 
     def __str__(self):
         return self.business_name or self.user.username
+
+
+class Customer(User):
+    class Meta:
+        proxy = True
+        verbose_name = "Khách hàng"
+        verbose_name_plural = "Khách hàng"
+
+
+class CourtOwner(User):
+    class Meta:
+        proxy = True
+        verbose_name = "Quản lý sân"
+        verbose_name_plural = "Quản lý sân"
+

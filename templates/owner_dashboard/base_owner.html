@@ -1,0 +1,466 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}MatchUp Manager{% endblock %}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0a0f1b;
+            --sidebar: #101827;
+            --panel: #172235;
+            --border: #29374d;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --accent: #38bdf8;
+
+            --owner-nav: #006b3b;
+            --owner-nav-active: #ffce32;
+            --owner-nav-height: 74px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-padding-bottom: 90px;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Be Vietnam Pro", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button, input, select {
+            font: inherit;
+        }
+
+        /* ===== THANH ĐIỀU HƯỚNG DƯỚI ===== */
+
+        .owner-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(
+                var(--owner-nav-height) + env(safe-area-inset-bottom, 0px)
+            );
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            background: var(--owner-nav);
+            z-index: 9990;
+            box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.18);
+        }
+
+        .owner-navigation-inner {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            align-items: stretch;
+        }
+
+        .owner-navigation-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            min-width: 0;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 800;
+            text-align: center;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .owner-navigation-link i {
+            font-size: 23px;
+            line-height: 1;
+        }
+
+        .owner-navigation-link span {
+            line-height: 1.3;
+        }
+
+        .owner-navigation-link:hover {
+            background: rgba(255,255,255,0.09);
+            color: var(--owner-nav-active);
+        }
+
+        .owner-navigation-link.active {
+            color: var(--owner-nav-active);
+        }
+
+        .owner-navigation-link:focus-visible {
+            outline: 3px solid var(--owner-nav-active);
+            outline-offset: -4px;
+        }
+
+        /* Chừa khoảng trống dưới để menu không che nội dung */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            padding-bottom: calc(
+                var(--owner-nav-height) + env(safe-area-inset-bottom, 0px)
+            );
+        }
+
+        /* ===== CSS GỐC ===== */
+
+        .sidebar {
+            width: 255px;
+            flex-shrink: 0;
+            padding: 25px 15px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: 800;
+            margin: 0 12px 5px;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .subtitle {
+            font-size: 10px;
+            color: var(--muted);
+            margin: 0 12px 30px;
+        }
+
+        .nav-title {
+            color: #71829c;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin: 25px 12px 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px;
+            border-radius: 10px;
+            color: #b2bfd2;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .nav-link i {
+            width: 18px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #1c354b;
+            color: var(--accent);
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 28px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 30px;
+        }
+
+        .topbar strong {
+            color: var(--text);
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 25px;
+            margin: 0 0 8px;
+        }
+
+        h2 {
+            font-size: 17px;
+            margin: 0 0 20px;
+        }
+
+        p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .panel, .stat {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit, minmax(165px, 1fr)
+            );
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            margin: 0;
+        }
+
+        .stat i {
+            display: block;
+            font-size: 20px;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .stat small {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 25px;
+            margin-top: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 0;
+            border-radius: 9px;
+            padding: 11px 15px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            background: #26364d;
+            color: white;
+        }
+
+        .btn-primary {
+            background: #0284c7;
+        }
+
+        .btn:hover {
+            filter: brightness(1.15);
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: end;
+            margin-bottom: 20px;
+        }
+
+        .field label {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            margin-bottom: 7px;
+        }
+
+        input, select {
+            max-width: 100%;
+            background: #0e192b;
+            border: 1px solid #34445d;
+            color: var(--text);
+            border-radius: 9px;
+            padding: 10px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 650px;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-size: 12px;
+        }
+
+        th {
+            color: var(--muted);
+            background: #1c2a40;
+        }
+
+        .status {
+            display: inline-block;
+            border-radius: 20px;
+            padding: 6px 10px;
+            background: #334155;
+            font-size: 11px;
+        }
+
+        .empty {
+            color: var(--muted);
+            padding: 25px;
+        }
+
+        @media (max-width: 850px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .sidebar nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .nav-title {
+                width: 100%;
+            }
+
+            .main {
+                padding: 16px;
+            }
+
+            .topbar {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --owner-nav-height: 66px;
+            }
+
+            .owner-navigation-link {
+                font-size: 10px;
+                gap: 4px;
+            }
+
+            .owner-navigation-link i {
+                font-size: 20px;
+            }
+
+            .main {
+                padding: 14px;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<div class="layout">
+    <main class="main">
+        <div class="topbar">
+            <span>
+                <i class="fa-solid fa-shield-halved"></i>
+                MatchUp / Chủ sân
+            </span>
+
+            <strong>
+                <i class="fa-solid fa-user-circle"></i>
+                {{ request.user.username }}
+            </strong>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="panel">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+<!-- CHỈ MỘT THANH ĐIỀU HƯỚNG Ở DƯỚI -->
+<nav class="owner-navigation" aria-label="Điều hướng chủ sân">
+    <div class="owner-navigation-inner">
+
+        <a
+            href="{% url 'owner_dashboard:dashboard' %}"
+            class="owner-navigation-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+            {% if request.resolver_match.url_name == 'dashboard' %}
+                aria-current="page"
+            {% endif %}
+        >
+            <i class="fa-solid fa-house"></i>
+            <span>Trang chủ</span>
+        </a>
+
+        <a
+            href="{% url 'owner_dashboard:schedule' %}"
+            class="owner-navigation-link {% if request.resolver_match.url_name == 'schedule' or request.resolver_match.url_name == 'booking_confirm' %}active{% endif %}"
+            {% if request.resolver_match.url_name == 'schedule' %}
+                aria-current="page"
+            {% endif %}
+        >
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Đặt lịch</span>
+        </a>
+
+        <a
+            href="{% url 'owner_dashboard:booking_approvals' %}"
+            class="owner-navigation-link {% if request.resolver_match.url_name == 'booking_approvals' or request.resolver_match.url_name == 'booking_approval_action' %}active{% endif %}"
+            {% if request.resolver_match.url_name == 'booking_approvals' %}
+                aria-current="page"
+            {% endif %}
+        >
+            <i class="fa-solid fa-list-check"></i>
+            <span>Duyệt đơn</span>
+        </a>
+
+    </div>
+</nav>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>
